@@ -13,8 +13,15 @@
 
 class ScreenManager {
 public:
+    ScreenManager(const ScreenManager&) = delete;
+    ScreenManager& operator=(const ScreenManager&) = delete;
+
+    static ScreenManager& getInstance() {
+        static ScreenManager instance;
+        return instance;
+    }
+
     void setup();
-    ScreenManager();
     void calibrate();
     void updateTouch();
     bool isPressed() const;
@@ -26,4 +33,6 @@ private:
     bool _pressed = false;
     uint16_t _pressX = 0;
     uint16_t _pressY = 0;
+
+    ScreenManager();
 };

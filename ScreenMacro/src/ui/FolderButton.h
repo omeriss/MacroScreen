@@ -6,7 +6,7 @@
 
 class FolderButton : public Button {
 public:
-    FolderButton(ScreenManager& uiManager, std::function<void(Screen*)> changeScreen, Screen* folderScreen, char* label, uint16_t color, int index);
+    FolderButton(std::function<void(Screen*)> changeScreen, Screen* folderScreen, char* label, uint16_t color, int index);
     void onPress() override;
 private:
     Screen* _folderScreen;

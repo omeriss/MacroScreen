@@ -4,12 +4,7 @@
 
 #include "Screen.h"
 
-Screen::Screen(ScreenManager &screenManager, std::vector<Button*> *buttons) : _buttons(buttons), _screenManager(screenManager) {}
-
-Screen::Screen(ScreenManager &screenManager) : _screenManager(screenManager) {
-
-}
-
+Screen::Screen(std::vector<Button*> *buttons) : _buttons(buttons) {}
 
 void Screen::update() {
     for (auto& button : *_buttons) {
@@ -18,7 +13,7 @@ void Screen::update() {
 }
 
 void Screen::draw() {
-    _screenManager.tft.fillScreen(TFT_BLACK);
+    ScreenManager::getInstance().tft.fillScreen(TFT_BLACK);
 
     for (auto& button : *_buttons) {
         button->draw();
