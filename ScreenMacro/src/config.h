@@ -19,6 +19,15 @@
 // touch config
 #define TOUCH_THRESHOLD 40
 
+#define DOUBLE_TAP_THRESHOLD 500
+
 // screen data
 #define SCREEN_WIDTH 480
 #define SCREEN_HEIGHT 320
+
+// usb
+#define USB_PID 0x1610
+#define USB_VID 0x1610
+#define USB_MANUFACTURER "Omeriss"
+#define USB_PRODUCT "ScreenMacro"
+#define TIMED_READ_TIMEOUT 100

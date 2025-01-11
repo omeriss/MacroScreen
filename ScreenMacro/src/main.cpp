@@ -6,12 +6,24 @@
 UiManager uiManager;
 
 void setup() {
-    Serial.begin(9600);
+    Serial.begin(115200);
+
+    Serial.println("Starting setup");
+
+    UsbManager::getInstance().setup();
+
+    if (psramInit()){
+        Serial.println("PSRAM initialized successfully");
+    } else {
+        Serial.println("An error occurred while initializing PSRAM");
+    }
 
     if(!LittleFS.begin()){
         Serial.println("An Error has occurred while mounting LittleFS");
         return;
     }
+
+    Serial.println("LittleFS mounted successfully");
 
     uiManager.setup();
 }
@@ -29,3 +41,4 @@ void loop() {
         t = 0;
     }
 }
+

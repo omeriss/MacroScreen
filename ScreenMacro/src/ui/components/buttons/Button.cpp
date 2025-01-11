@@ -1,5 +1,8 @@
 #include "Button.h"
 
+std::unordered_map<std::string, ButtonImage> Button::imageCache;
+
+
 Button::Button(char *label, uint16_t color, int index) {
     int row = index / BUTTON_ROWS;
     int col = index % BUTTON_COLS;
@@ -17,7 +20,7 @@ Button::Button(char *label, uint16_t color, int index) {
     _fillcolor    = color;
     _textcolor    = TFT_WHITE;
     _textsize     = BUTTON_TEXT_SIZE;
-    strncpy(_label, label, 14);
+    _label        = label;
 }
 
 
@@ -45,7 +48,7 @@ void Button::drawText(uint16_t fill, uint16_t text) {
                                     _y1 + (_h / 4));
         screenManager.tft.setTextColor(text);
         screenManager.tft.setTextSize(_textsize);
-        screenManager.tft.print(_label);
+        screenManager.tft.print(_label.c_str());
     }
     else {
         screenManager.tft.setTextColor(text, fill);
@@ -56,7 +59,7 @@ void Button::drawText(uint16_t fill, uint16_t text) {
         uint16_t tempPadding = screenManager.tft.getTextPadding();
         screenManager.tft.setTextPadding(0);
 
-        screenManager.tft.drawString(_label, _x1 + (_w/2) + _xd, _y1 + (_h/2) - 4 + _yd);
+        screenManager.tft.drawString(_label.c_str(), _x1 + (_w/2) + _xd, _y1 + (_h/2) - 4 + _yd);
 
         screenManager.tft.setTextDatum(tempdatum);
         screenManager.tft.setTextPadding(tempPadding);
@@ -65,25 +68,61 @@ void Button::drawText(uint16_t fill, uint16_t text) {
 
 void Button::drawImage() {
     auto& screenManager = ScreenManager::getInstance();
+    ButtonImage image = {nullptr, 0};
 
-# define MAX_IMAGE_WIDTH 320
-    int16_t rc = PngUtils::png.open(_label, PngUtils::pngOpen, PngUtils::pngClose, PngUtils::pngRead, PngUtils::pngSeek, PngUtils::pngDraw);
+    // check if image is in cache, if not load it
+    if (imageCache.find(_label) == imageCache.end()) {
+        Serial.printf("Image %s not found in cache\n", _label.c_str());
+
+        auto img = LittleFS.open(_label.c_str(), "r");
+
+        if (!img) {
+            Serial.printf("Image %s not found\n", _label.c_str());
+            return;
+        }
+
+        uint8_t* buffer = (uint8_t*)ps_malloc(img.size());
+
+        // print how much memory is left in the psram
+        Serial.printf("Memory left: %d\n", ESP.getFreePsram());
+
+        if (buffer) {
+            img.read(buffer, img.size());
+            image = {buffer, img.size()};
+            img.close();
+            imageCache[_label] = image;
+        }
+    }
+    else {
+        Serial.printf("Image %s found in cache\n", _label.c_str());
+        image = imageCache[_label];
+    }
+
+    int16_t rc;
+
+    if (image.data) {
+        rc = PngUtils::png.openRAM(image.data, image.size, PngUtils::pngDraw);
+    } else {
+        Serial.printf("Loading img from memory", _label.c_str());
+        rc = PngUtils::png.open(_label.c_str(), PngUtils::pngOpen, PngUtils::pngClose, PngUtils::pngRead, PngUtils::pngSeek, PngUtils::pngDraw);
+    }
+
     if (rc == PNG_SUCCESS) {
         screenManager.tft.startWrite();
-        Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n", PngUtils::png.getWidth(), PngUtils::png.getHeight(), PngUtils::png.getBpp(), PngUtils::png.getPixelType());
+        Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n", PngUtils::png.getWidth(),
+                      PngUtils::png.getHeight(), PngUtils::png.getBpp(), PngUtils::png.getPixelType());
         uint32_t dt = millis();
-        if (PngUtils::png.getWidth() > MAX_IMAGE_WIDTH) {
-            Serial.println("Image too wide for allocated line buffer size!");
-        }
-        else {
-            Pos pos = {_x1 + (_w - PngUtils::png.getWidth()) / 2, _y1 + (_h - PngUtils::png.getHeight()) / 2};
 
-            rc = PngUtils::png.decode(&pos, 0);
-            PngUtils::png.close();
-        }
+        Pos pos = {_x1 + (_w - PngUtils::png.getWidth()) / 2, _y1 + (_h - PngUtils::png.getHeight()) / 2};
+
+        rc = PngUtils::png.decode(&pos, 0);
+        PngUtils::png.close();
+
         screenManager.tft.endWrite();
+
         // How long did rendering take...
-        Serial.print(millis()-dt); Serial.println("ms");
+        Serial.print(millis() - dt);
+        Serial.println("ms");
     }
 }
 

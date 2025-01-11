@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScreenMacroService", "ScreenMacroService\ScreenMacroService.csproj", "{ABF1D716-6758-4F47-96D4-405F3619158C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Managers", "Managers\Managers.csproj", "{16182C45-8EBA-4AB9-AA71-10113D6BC671}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{91A7E0EB-CD56-435B-A60B-C653FBAD91DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ABF1D716-6758-4F47-96D4-405F3619158C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABF1D716-6758-4F47-96D4-405F3619158C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABF1D716-6758-4F47-96D4-405F3619158C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABF1D716-6758-4F47-96D4-405F3619158C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16182C45-8EBA-4AB9-AA71-10113D6BC671}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16182C45-8EBA-4AB9-AA71-10113D6BC671}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16182C45-8EBA-4AB9-AA71-10113D6BC671}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16182C45-8EBA-4AB9-AA71-10113D6BC671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91A7E0EB-CD56-435B-A60B-C653FBAD91DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91A7E0EB-CD56-435B-A60B-C653FBAD91DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91A7E0EB-CD56-435B-A60B-C653FBAD91DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91A7E0EB-CD56-435B-A60B-C653FBAD91DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

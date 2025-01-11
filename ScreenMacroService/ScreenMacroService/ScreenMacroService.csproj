@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-ScreenMacroService-da8acd85-1b61-44b2-a1e4-2267a777e3c0</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="LibUsbDotNet" Version="2.2.29" />
+      <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="9.0.0" />
+      <PackageReference Include="System.IO.Ports" Version="9.0.0" />
+      <PackageReference Include="System.Management" Version="9.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Managers\Managers.csproj" />
+    </ItemGroup>
+</Project>

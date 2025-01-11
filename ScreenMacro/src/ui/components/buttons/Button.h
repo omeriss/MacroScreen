@@ -3,8 +3,15 @@
 #include "TFT_eSPI.h"
 #include "utils/ScreenManager.h"
 #include <vector>
+#include <unordered_map>
 #include "config.h"
 #include "utils/PngFsUtils.h"
+#include <string>
+
+struct ButtonImage {
+    uint8_t* data;
+    uint32_t size;
+};
 
 class Button {
 public:
@@ -18,7 +25,7 @@ protected:
     uint16_t _w, _h;   // Width and height of button
     uint8_t  _textsize, _textdatum; // Text size multiplier and text datum for button
     uint16_t _outlinecolor, _fillcolor, _textcolor;
-    char     _label[15]; // Button text is 9 chars maximum unless long_name used
+    std::string     _label;
 
     bool  currstate, laststate; // Button states
 private:
@@ -29,4 +36,5 @@ private:
     bool     justReleased() const;
     void drawText(uint16_t fill, uint16_t text);
     void drawImage();
+    static std::unordered_map<std::string, ButtonImage> imageCache;
 };

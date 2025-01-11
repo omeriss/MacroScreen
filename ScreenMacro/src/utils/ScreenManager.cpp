@@ -168,13 +168,16 @@ bool ScreenManager::isPressed() const {
 }
 
 void ScreenManager::setup() {
+    Serial.println("Setting up screen manager");
     tft.init();
+    Serial.println("Screen initialized");
     tft.setRotation(3);
+    Serial.println("Screen rotated");
 
     bool touchStarted = false;
 
     while (!touchStarted) {
-        touchStarted = ts.begin(TOUCH_THRESHOLD, 21, 22);
+        touchStarted = ts.begin(TOUCH_THRESHOLD, 4, 5);
 
         if (!touchStarted) {
             Serial.println("Couldn't start FT6206 touchscreen controller");

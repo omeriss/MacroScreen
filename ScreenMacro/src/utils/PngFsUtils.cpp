@@ -36,7 +36,6 @@ void PngUtils::pngDraw(PNGDRAW *pDraw) {
 
     if (png.getAlphaMask(pDraw, maskBuffer, 255)) {
         // Note: pushMaskedImage is for pushing to the TFT and will not work pushing into a sprite
-        ScreenManager::getInstance().tft.pushMaskedImage(pos->x, pos->y + pDraw->y, pDraw->iWidth, 1, lineBuffer,
-                                                         maskBuffer);
+        ScreenManager::getInstance().tft.pushMaskedImage(pos->x, pos->y + pDraw->y, pDraw->iWidth, 1, lineBuffer, maskBuffer);
     }
 }
