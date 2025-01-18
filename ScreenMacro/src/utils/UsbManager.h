@@ -6,6 +6,7 @@
 #include <vector>
 #include <esp32-hal.h>
 #include "config.h"
+#include "Command.h"
 
 #define START_BYTE 0x7E
 #define END_BYTE 0x7F
@@ -13,19 +14,6 @@
 
 #define CDC_RX_BUFFER_SIZE 2048
 #define CDC_TX_BUFFER_SIZE 1024
-
-enum class CommandType : uint8_t {
-    NoData,
-    Acknowledge,
-    Log,
-    OpenProgram
-};
-
-struct Command {
-    CommandType type;
-    uint8_t* payload;
-    size_t length;
-};
 
 class UsbManager {
 public:
@@ -43,6 +31,7 @@ public:
     Command readCommand();
 
     void sendCommand(CommandType type, uint8_t *payload, size_t length);
+    void sendCommand(Command command);
 
     USBHIDKeyboard keyboard = USBHIDKeyboard();
     USBCDC cdc = USBCDC();

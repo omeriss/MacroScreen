@@ -147,8 +147,8 @@ void ScreenManager::updateTouch() {
 
     TS_Point p = ts.getPoint();
     _pressed = true;
-    _pressX = tft.width() - p.y;
-    _pressY = p.x;
+    _pressX = p.y;
+    _pressY = tft.height() - p.x;
 }
 
 
@@ -171,7 +171,7 @@ void ScreenManager::setup() {
     Serial.println("Setting up screen manager");
     tft.init();
     Serial.println("Screen initialized");
-    tft.setRotation(3);
+    tft.setRotation(1);
     Serial.println("Screen rotated");
 
     bool touchStarted = false;

@@ -6,6 +6,8 @@
 UiManager uiManager;
 
 void setup() {
+    delay(100);
+
     Serial.begin(115200);
 
     Serial.println("Starting setup");

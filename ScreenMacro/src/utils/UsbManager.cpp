@@ -79,7 +79,7 @@ Command UsbManager::readCommand() {
 
     if (timedRead() != END_BYTE) return {};
 
-    return {(CommandType)typeData, _rxBuffer, length};
+    return Command((CommandType)typeData, _rxBuffer, length);
 }
 
 void writeByteWithChecksum(uint8_t b, uint8_t* buffer, uint8_t& checksum, size_t& index) {
@@ -111,4 +111,8 @@ void UsbManager::sendCommand(CommandType type, uint8_t* payload, size_t length){
     _txBuffer[index++] = END_BYTE;
 
     cdc.write(_txBuffer, index);
+}
+
+void UsbManager::sendCommand(Command command) {
+    sendCommand(command.type, command.payload, command.length);
 }

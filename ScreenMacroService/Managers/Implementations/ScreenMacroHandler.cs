@@ -35,8 +35,6 @@ public class ScreenMacroHandler(IComHandler com, IActions actions) : IScreenMacr
     
     public void Start(bool retry = true)
     {
-        _actions.StartStatistics(new Command(){Type = CommandType.StartStatistics});
-        
         const int retryDelay = 1000;
         
         while (retry)

@@ -82,7 +82,7 @@ public class ComHandler(IConfiguration configuration) : IComHandler
             for (int i = 0; i < length; i++)
             {
                 int b = ReadByteCheckSum(ref checksum);
-                payload[i] = (byte)b;
+                payload.Add((byte)b);
             }
 
             int receivedChecksum = ReadByteCheckSum(ref checksum);

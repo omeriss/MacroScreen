@@ -9,7 +9,7 @@ using Microsoft.Diagnostics.Tracing.Session;
 namespace Managers.Implementations;
 
 
-public class StatisticsHandler : IStatisticsHandler
+public class StatisticsHandler(IComHandler comHandler) : IStatisticsHandler
 {
     private const int EventIdD3D9PresentStart = 1;
     private const int EventIdDxgiPresentStart = 42;
@@ -22,6 +22,8 @@ public class StatisticsHandler : IStatisticsHandler
 
     private static readonly Guid DxgiProvider = Guid.Parse("{CA11C036-0102-4A2D-A6AD-F03CFED5D3C9}");
     private static readonly Guid D3D9Provider = Guid.Parse("{783ACA0A-790E-4D7F-8451-AA850511C6B9}");
+    
+    IComHandler _comHandler = comHandler;
 
     private TraceEventSession? _traceSession;
     private readonly Dictionary<int, TimestampCollection> _frames = new Dictionary<int, TimestampCollection>();
@@ -34,7 +36,7 @@ public class StatisticsHandler : IStatisticsHandler
     private CancellationTokenSource? _cancellationTokenSource;
 
     private (KeyValuePair<int, TimestampCollection> process, long updated)? _controllingProcess = null;
-    
+
     void EtwThreadProc()
     {
         _traceSession?.Source.Process();
@@ -173,7 +175,9 @@ public class StatisticsHandler : IStatisticsHandler
             command.Write(stats.GpuUsage);
             command.Write(stats.Fps);
             if (processChanged) command.WriteString(stats.ProcessName ?? "");
-
+            
+            _comHandler.SendCommand(command);
+            
             try
             {
                 Task.Delay(SleepTime, token).Wait(token);

@@ -1,0 +1,63 @@
+.logo {
+  width: 24px;
+  aspect-ratio: 1;
+}
+
+.mainPage {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.nav {
+  height: 30px;
+  background-color: #282c34;
+  padding: 3px;
+
+  display: flex;
+  align-items: center;
+
+  color: #636974;
+
+  section {
+    margin-right: 20px;
+  }
+}
+
+.positioner {
+  --padding: 200px;
+
+  background-color: #21252b;
+  height: 20px;
+  color: #636974;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  padding-left: var(--padding);
+  width: calc(100% - var(--padding));
+}
+
+.sideNav {
+  --padding: 20px;
+
+  background-color: #21252b;
+  width: 150px;
+  color: #636974;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: var(--padding);
+  height: calc(100% - var(--padding));
+}
+
+.content {
+  height: 100%;
+  display: flex;
+}
+
+.displaySection {
+  width: 100%;
+  height: 100%;
+  background-color: #282c34;
+}

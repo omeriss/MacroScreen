@@ -1,11 +1,14 @@
 #include "GamingScreen.h"
 
+#define TEXT_PADDING 30
+
 GamingScreen::GamingScreen(std::function<void()> exit) :
 _cpu(0, 100, "%", "CPU", 60 + 30, 100, 60, TFT_GREEN),
 _gpu(0, 100, "%", "GPU", 60 + 30 * 2 + 120, 100, 60, TFT_BLUE),
 _ram(0, 100, "%", "RAM", 60 + 30 * 3 + 120 * 2, 100, 60, TFT_RED),
 _exit(exit)
 {
+    _type = GAMING;
 }
 
 bool GamingScreen::_checkDoubleTap() {
@@ -30,17 +33,6 @@ bool GamingScreen::_checkDoubleTap() {
 
 void GamingScreen::update() {
     if(_checkDoubleTap()) return;
-
-    static unsigned long lastUpdate = 0;
-
-    if (millis() - lastUpdate < 1000) return;
-
-    lastUpdate = millis();
-
-    // random val between 0 and 99
-    _cpu.update(random(100));
-    _gpu.update(random(100));
-    _ram.update(random(100));
 }
 
 void GamingScreen::draw() {
@@ -49,4 +41,32 @@ void GamingScreen::draw() {
     _cpu.draw();
     _gpu.draw();
     _ram.draw();
+
+    ScreenManager::getInstance().tft.setTextDatum(TC_DATUM);
+    ScreenManager::getInstance().tft.setFreeFont(FONT);
+    ScreenManager::getInstance().tft.setTextSize(1);
+    ScreenManager::getInstance().tft.setTextColor(TFT_YELLOW, TFT_BLACK);
+
+    ScreenManager::getInstance().tft.drawString("FPS", SCREEN_WIDTH / 2, SCREEN_HEIGHT - TEXT_PADDING);
+
+    UsbManager::getInstance().sendCommand(CommandType::StartStatistics, nullptr, 0);
+}
+
+void GamingScreen::setStatistics(int cpu, int gpu, int ram, uint16_t fps) {
+    _cpu.update(cpu);
+    _gpu.update(gpu);
+    _ram.update(ram);
+
+
+    ScreenManager::getInstance().tft.setTextColor(TFT_WHITE, TFT_BLACK);
+    ScreenManager::getInstance().tft.setTextDatum(TC_DATUM);
+    ScreenManager::getInstance().tft.setFreeFont(FONT);
+    ScreenManager::getInstance().tft.setTextSize(1);
+
+    ScreenManager::getInstance().tft.fillRect(SCREEN_WIDTH / 2 - TEXT_PADDING, SCREEN_HEIGHT - TEXT_PADDING * 3, TEXT_PADDING * 2, TEXT_PADDING * 2, TFT_BLACK);
+
+    ScreenManager::getInstance().tft.drawNumber(fps, SCREEN_WIDTH / 2, SCREEN_HEIGHT - TEXT_PADDING * 2);
+
+
+
 }
