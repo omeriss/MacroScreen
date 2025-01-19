@@ -52,9 +52,15 @@ UiManager::UiManager() {
     subButtons->push_back(new ActionButton([this, cur]() {
         esp_restart();
     }, "Restart", TFT_BLUE, 2));
-    subButtons->push_back(new Button("C3", TFT_BLUE, 3));
-    subButtons->push_back(new Button("C1", TFT_BLUE, 4));
-    subButtons->push_back(new Button("C2", TFT_BLUE, 5));
+    subButtons->push_back(new ActionButton([this, cur]() {
+        ScreenManager::getInstance().turnOffBacklight();
+    }, "LOW", TFT_BLUE, 3));
+    subButtons->push_back(new ActionButton([this, cur]() {
+        ScreenManager::getInstance().turnOnBacklight();
+        }, "HIGH", TFT_BLUE, 4));
+    subButtons->push_back(new ActionButton([this, cur]() {
+        ScreenManager::getInstance().sleep();
+    }, "SLEEP", TFT_BLUE, 5));
     subButtons->push_back(new Button("C3", TFT_BLUE, 6));
     subButtons->push_back(new Button("C1", TFT_BLUE, 7));
     subButtons->push_back(new Button("C2", TFT_BLUE, 8));
@@ -78,11 +84,7 @@ UiManager::UiManager() {
 
 void UiManager::setup() {
     ScreenManager::getInstance().setup();
-    ScreenManager::getInstance().calibrate();
-
-    Serial.println("Calibration done");
     _currentScreen->draw();
-    Serial.println("Screen drawn");
 }
 
 void UiManager::changeScreen(Screen *screen) {

@@ -67,24 +67,16 @@ void Button::drawText(uint16_t fill, uint16_t text) {
 }
 
 void Button::drawImage() {
-    auto& screenManager = ScreenManager::getInstance();
+    auto &screenManager = ScreenManager::getInstance();
     ButtonImage image = {nullptr, 0};
 
-    // check if image is in cache, if not load it
     if (imageCache.find(_label) == imageCache.end()) {
-        Serial.printf("Image %s not found in cache\n", _label.c_str());
-
         auto img = LittleFS.open(_label.c_str(), "r");
 
-        if (!img) {
-            Serial.printf("Image %s not found\n", _label.c_str());
+        if (!img)
             return;
-        }
 
-        uint8_t* buffer = (uint8_t*)ps_malloc(img.size());
-
-        // print how much memory is left in the psram
-        Serial.printf("Memory left: %d\n", ESP.getFreePsram());
+        uint8_t *buffer = (uint8_t *) ps_malloc(img.size());
 
         if (buffer) {
             img.read(buffer, img.size());
@@ -92,37 +84,25 @@ void Button::drawImage() {
             img.close();
             imageCache[_label] = image;
         }
-    }
-    else {
-        Serial.printf("Image %s found in cache\n", _label.c_str());
+    } else {
         image = imageCache[_label];
     }
 
     int16_t rc;
 
-    if (image.data) {
+    if (image.data)
         rc = PngUtils::png.openRAM(image.data, image.size, PngUtils::pngDraw);
-    } else {
-        Serial.printf("Loading img from memory", _label.c_str());
-        rc = PngUtils::png.open(_label.c_str(), PngUtils::pngOpen, PngUtils::pngClose, PngUtils::pngRead, PngUtils::pngSeek, PngUtils::pngDraw);
-    }
+    else
+        rc = PngUtils::png.open(_label.c_str(), PngUtils::pngOpen, PngUtils::pngClose, PngUtils::pngRead,
+                                PngUtils::pngSeek, PngUtils::pngDraw);
+
 
     if (rc == PNG_SUCCESS) {
         screenManager.tft.startWrite();
-        Serial.printf("image specs: (%d x %d), %d bpp, pixel type: %d\n", PngUtils::png.getWidth(),
-                      PngUtils::png.getHeight(), PngUtils::png.getBpp(), PngUtils::png.getPixelType());
-        uint32_t dt = millis();
-
         Pos pos = {_x1 + (_w - PngUtils::png.getWidth()) / 2, _y1 + (_h - PngUtils::png.getHeight()) / 2};
-
         rc = PngUtils::png.decode(&pos, 0);
         PngUtils::png.close();
-
         screenManager.tft.endWrite();
-
-        // How long did rendering take...
-        Serial.print(millis() - dt);
-        Serial.println("ms");
     }
 }
 

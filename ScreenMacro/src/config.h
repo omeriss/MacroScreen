@@ -1,3 +1,9 @@
+//pins
+#define SDA_PIN 4
+#define SCL_PIN 5
+#define BACKLIGHT_PIN 14
+#define SCREEN_INT_PIN 8
+
 // Buttons Data
 #define BUTTON_W 140
 #define BUTTON_H 80

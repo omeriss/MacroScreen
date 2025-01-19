@@ -5,7 +5,6 @@ fs::File pngTemp;
 PNG PngUtils::png = PNG();
 
 void* PngUtils::pngOpen(const char *filename, int32_t *size) {
-    Serial.printf("Attempting to open %s\n", filename);
     pngTemp = LittleFS.open(filename, "r");
     *size = pngTemp.size();
     return &pngTemp;
