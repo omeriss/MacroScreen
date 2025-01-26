@@ -4,14 +4,22 @@
   height: 25%;
 
   border-radius: 25px;
+
   border: 1px solid white;
   color: white;
 
   display: flex;
   justify-content: center;
   align-items: center;
+
+  container-name: bttn;
+  font-size: 1.5vw;
 }
 
 .img {
   height: 85%;
+}
+
+.disabled {
+  border: none;
 }

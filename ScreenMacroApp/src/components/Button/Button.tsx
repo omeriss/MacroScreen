@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import styles from "./Button.module.css";
 import { useState } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
@@ -8,11 +8,11 @@ import ImageModal from "../ImageModal/ImageModal";
 interface ButtonProps {
   background?: number;
   label?: string;
+  disabled?: boolean;
 }
 
-const Button = ({ background }: ButtonProps) => {
+const Button = ({ background, label, disabled }: ButtonProps) => {
   const backgroundColor = `#${background?.toString(16) ?? "000000"}`;
-
   const [imagePath, setImagePath] = useState<string | null>(null);
 
   const updatePaths = async () => {
@@ -26,8 +26,11 @@ const Button = ({ background }: ButtonProps) => {
   }, []);
 
   return (
-    <div className={styles.button} style={{ backgroundColor: backgroundColor }}>
-      <ImageModal />
+    <div
+      className={`${styles.button} ${disabled ? styles.disabled : ""}`}
+      style={{ backgroundColor: backgroundColor }}
+    >
+      <span>{label}</span>
     </div>
   );
 };

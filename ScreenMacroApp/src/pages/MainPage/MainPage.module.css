@@ -1,6 +1,8 @@
 .logo {
-  width: 24px;
+  width: 20px;
   aspect-ratio: 1;
+  padding-left: 5px;
+  padding-top: 5px;
 }
 
 .mainPage {
@@ -11,13 +13,13 @@
 
 .nav {
   height: 30px;
-  background-color: #282c34;
+  background-color: var(--primery-color);
   padding: 3px;
 
   display: flex;
   align-items: center;
 
-  color: #636974;
+  color: var(--nav-text-color);
 
   section {
     margin-right: 20px;
@@ -27,28 +29,45 @@
 .positioner {
   --padding: 200px;
 
-  background-color: #21252b;
-  height: 20px;
-  color: #636974;
+  background-color: var(--primery-color);
+  height: 23px;
+  color: var(--nav-text-color);
   font-size: 12px;
   display: flex;
   align-items: center;
   padding-left: var(--padding);
   width: calc(100% - var(--padding));
+
+  box-shadow: 0 -1px 0 0 var(--secondary-color);
 }
 
-.sideNav {
-  --padding: 20px;
+.contentContainer {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
 
-  background-color: #21252b;
-  width: 150px;
-  color: #636974;
-  font-size: 12px;
+.contentContainer > .sideSelection {
+  width: 50px;
+  height: 100%;
+  background-color: var(--primery-color);
+}
+
+.contentContainer > div {
+  height: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.leftNav {
+  background-color: var(--secondary-color);
+  height: 20px;
+  color: var(--nav-text-color);
+  font-size: 12px;
+  display: flex;
   align-items: center;
-  padding-top: var(--padding);
-  height: calc(100% - var(--padding));
 }
 
 .content {
@@ -59,5 +78,23 @@
 .displaySection {
   width: 100%;
   height: 100%;
-  background-color: #282c34;
+  background-color: var(--primery-color);
+}
+
+.editNav {
+  --padding: 20px;
+
+  background-color: var(--secondary-color);
+  width: 500px;
+  color: var(--nav-text-color);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: var(--padding);
+  height: calc(100% - var(--padding));
+}
+
+.editSection {
+  flex-grow: 1;
 }

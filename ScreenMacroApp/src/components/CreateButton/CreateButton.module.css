@@ -1,0 +1,33 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 300px;
+  background-color: var(--secondary-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 5px;
+
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-right: -50%;
+
+  color: white;
+
+  padding: 10px;
+
+  section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+
+    h1 {
+      padding-left: 20px;
+    }
+  }
+}

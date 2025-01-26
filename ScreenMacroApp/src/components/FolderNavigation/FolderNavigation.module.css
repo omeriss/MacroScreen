@@ -1,0 +1,41 @@
+.toolbar {
+  width: 250px;
+  /* resize: horizontal; */
+  overflow: hidden;
+  position: relative;
+}
+
+.resizeHandle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px; /* Width of the resizable handle */
+  height: 100%;
+  cursor: ew-resize; /* Cursor for horizontal resizing */
+  background-color: transparent; /* Make the handle invisible */
+}
+
+.toolbarSubtitle {
+  display: flex;
+  justify-content: space-between;
+
+  div {
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    border-radius: 50px;
+    height: 100%;
+
+    :hover {
+      cursor: pointer;
+      border-radius: 3px;
+      background-color: var(--highlight-color);
+    }
+
+    svg {
+      margin-right: 10px;
+      height: 90%;
+      aspect-ratio: 1;
+    }
+  }
+}

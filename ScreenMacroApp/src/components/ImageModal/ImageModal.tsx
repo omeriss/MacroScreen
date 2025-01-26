@@ -4,11 +4,16 @@ import styles from "./ImageModal.module.css";
 import Cropper, { Area } from "react-easy-crop";
 import { documentDir, join } from "@tauri-apps/api/path";
 import { writeFile } from "@tauri-apps/plugin-fs";
+import { IMAGE_SIZE } from "./ImageModal.config";
 
-const readFile = (file: File) => {
+const readFile = (file: File): Promise<string> => {
   return new Promise((resolve) => {
     const reader = new FileReader();
-    reader.addEventListener("load", () => resolve(reader.result), false);
+    reader.addEventListener(
+      "load",
+      () => resolve(reader.result as string),
+      false
+    );
     reader.readAsDataURL(file);
   });
 };
@@ -20,7 +25,6 @@ const ImageModal = () => {
   const [rotation, setRotation] = useState(0);
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>();
-  const [croppedImage, setCroppedImage] = useState<Area>();
 
   const onFileChange: React.ChangeEventHandler<HTMLInputElement> = async (
     e
@@ -48,8 +52,8 @@ const ImageModal = () => {
     await new Promise((resolve) => (image.onload = resolve));
 
     const canvas = document.createElement("canvas");
-    canvas.width = 76;
-    canvas.height = 76;
+    canvas.width = IMAGE_SIZE;
+    canvas.height = IMAGE_SIZE;
     const ctx = canvas.getContext("2d");
 
     ctx?.drawImage(
@@ -60,8 +64,8 @@ const ImageModal = () => {
       croppedAreaPixels.height,
       0,
       0,
-      76,
-      76
+      IMAGE_SIZE,
+      IMAGE_SIZE
     );
 
     canvas.toBlob(async (blob) => {
