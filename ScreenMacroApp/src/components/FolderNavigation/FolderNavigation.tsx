@@ -10,7 +10,8 @@ interface FolderNavigationProps {
   folders: FolderScreen;
   setPath: (path: string[]) => void;
   currentPath: string[];
-  addButton: (button: Button, key: string) => void;
+  addButton: (button: Button, key: string, modifyPath?: string[]) => void;
+  removeButton: (key: string, modifyPath?: string[]) => void;
 }
 
 const FolderNavigation = ({
@@ -18,6 +19,7 @@ const FolderNavigation = ({
   setPath,
   currentPath,
   addButton,
+  removeButton,
 }: FolderNavigationProps) => {
   const toolbarRef = useRef<HTMLDivElement>(null);
 
@@ -68,6 +70,8 @@ const FolderNavigation = ({
           path={[]}
           setPath={setPath}
           currentPath={currentPath}
+          addButton={addButton}
+          removeButton={removeButton}
         />
       </div>
       <div className={styles.resizeHandle} onMouseDown={handleMouseDown} />

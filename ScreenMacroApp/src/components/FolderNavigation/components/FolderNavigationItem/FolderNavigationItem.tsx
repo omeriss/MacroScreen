@@ -1,3 +1,4 @@
+import { Button } from "../../../../interfaces/Buttons";
 import FolderScreen from "../../../../interfaces/FolderScreen";
 import { isFolderButton } from "../../../../utils/buttonTypeUtils";
 import { InnerFolderItem, InnerItem } from "../InnerItem/InnerItem";
@@ -7,6 +8,8 @@ interface FolderNavigationItemProps {
   path: string[];
   setPath: (path: string[]) => void;
   currentPath: string[];
+  addButton: (button: Button, key: string, modifyPath?: string[]) => void;
+  removeButton: (key: string, modifyPath?: string[]) => void;
 }
 
 const FolderNavigationItem = ({
@@ -14,6 +17,8 @@ const FolderNavigationItem = ({
   path,
   setPath,
   currentPath,
+  addButton,
+  removeButton,
 }: FolderNavigationItemProps) => {
   return (
     <>
@@ -26,6 +31,8 @@ const FolderNavigationItem = ({
             currentPath={currentPath}
             path={path}
             setPath={setPath}
+            addButton={addButton}
+            removeButton={removeButton}
           />
         ) : (
           <InnerItem
@@ -35,6 +42,8 @@ const FolderNavigationItem = ({
             currentPath={currentPath}
             path={path}
             setPath={setPath}
+            addButton={addButton}
+            removeButton={removeButton}
           />
         )
       )}

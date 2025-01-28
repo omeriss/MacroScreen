@@ -19,7 +19,7 @@ const MainPage = () => {
         index: 0,
       },
       omer1: {
-        label: "omer",
+        label: "\\omer",
         background: 0x000000,
         type: ButtonType.App,
         index: 1,
@@ -59,12 +59,12 @@ const MainPage = () => {
     },
   });
 
-  const addButton = (button: Button, key: string) => {
-    const newRootScreen = { ...rootScreen };
+  const deepCopyToPath = (basePath: string[], screen: FolderScreen) => {
+    const newRootScreen = { ...screen };
 
     let currentScreen = newRootScreen;
 
-    path.forEach((folder) => {
+    basePath.forEach((folder) => {
       if (isFolderButton(currentScreen.buttons[folder])) {
         currentScreen.buttons = { ...currentScreen.buttons };
         currentScreen.buttons[folder] = { ...currentScreen.buttons[folder] };
@@ -78,9 +78,29 @@ const MainPage = () => {
 
     currentScreen.buttons = { ...currentScreen.buttons };
 
-    currentScreen.buttons[key] = button;
+    return [newRootScreen, currentScreen];
+  };
 
-    setRootScreen(newRootScreen);
+  const addButton = (button: Button, key: string, modifyPath?: string[]) => {
+    setRootScreen((prev) => {
+      const [newRootScreen, currentScreen] = deepCopyToPath(
+        modifyPath ?? path,
+        prev
+      );
+      currentScreen.buttons[key] = button;
+      return newRootScreen;
+    });
+  };
+
+  const removeButton = (key: string, modifyPath?: string[]) => {
+    setRootScreen((prev) => {
+      const [newRootScreen, currentScreen] = deepCopyToPath(
+        modifyPath ?? path,
+        prev
+      );
+      delete currentScreen.buttons[key];
+      return newRootScreen;
+    });
   };
 
   const currentScreen = useMemo(() => {
@@ -114,6 +134,7 @@ const MainPage = () => {
           setPath={setPath}
           currentPath={path}
           addButton={addButton}
+          removeButton={removeButton}
         />
         <div className={`toolbar-section ${styles.editSection}`}>
           <div className="toolbar-section-head"></div>

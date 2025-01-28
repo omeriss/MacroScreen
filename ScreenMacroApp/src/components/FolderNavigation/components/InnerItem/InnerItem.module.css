@@ -29,3 +29,13 @@
 .itemPadding {
   padding-left: 10px;
 }
+
+.dropTarget {
+  cursor: copy; /* Change the cursor to indicate a drop target */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.1
+  ); /* Optional: Add a background color to indicate the drop target */
+}

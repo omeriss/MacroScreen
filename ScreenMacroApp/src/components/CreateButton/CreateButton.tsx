@@ -15,6 +15,8 @@ const CreateButton = ({ children }: CreateButtonProps) => {
         isOpen={modalIsOpen}
         onRequestClose={() => setIsOpen(false)}
         className={styles.modal}
+        overlayClassName={styles.overlay}
+        appElement={document.getElementById("root") as HTMLElement}
       >
         <section>
           <h1>New</h1>
