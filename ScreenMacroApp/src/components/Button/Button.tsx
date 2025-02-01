@@ -21,7 +21,10 @@ const Button = ({ background, label, disabled }: ButtonProps) => {
   const [fontSize, setFontSize] = useState(0);
   const [borderRadius, setBorderRadius] = useState(0);
 
-  const backgroundColor = `#${background?.toString(16) ?? "000000"}`;
+  const backgroundColor = useMemo(
+    () => `#${(background ?? 0)?.toString(16).padStart(6, "0")}`,
+    [background]
+  );
 
   const updatePaths = async () => {
     const path = await join(await documentDir(), "image.png");

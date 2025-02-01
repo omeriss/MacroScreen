@@ -4,23 +4,20 @@ import FolderNavigationItem from "./components/FolderNavigationItem/FolderNaviga
 import styles from "./FolderNavigation.module.css";
 import { MdCreateNewFolder, MdNoteAdd } from "react-icons/md";
 import { Button, ButtonType } from "../../interfaces/Buttons";
-import CreateButton from "../CreateButton/CreateButton";
+import CreateButton, { CreateType } from "../CreateButton/CreateButton";
+import { useRecoilValue } from "recoil";
+import { rootScreenState } from "../../store/store";
 
 interface FolderNavigationProps {
-  folders: FolderScreen;
-  setPath: (path: string[]) => void;
-  currentPath: string[];
   addButton: (button: Button, key: string, modifyPath?: string[]) => void;
   removeButton: (key: string, modifyPath?: string[]) => void;
 }
 
 const FolderNavigation = ({
-  folders,
-  setPath,
-  currentPath,
   addButton,
   removeButton,
 }: FolderNavigationProps) => {
+  const folders = useRecoilValue(rootScreenState);
   const toolbarRef = useRef<HTMLDivElement>(null);
 
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -56,10 +53,10 @@ const FolderNavigation = ({
       <div className={`toolbar-section-subtitle ${styles.toolbarSubtitle}`}>
         <h3>test</h3>
         <div>
-          <CreateButton>
+          <CreateButton type={CreateType.BUTTON} addButton={addButton}>
             <MdNoteAdd />
           </CreateButton>
-          <CreateButton>
+          <CreateButton type={CreateType.FOLDER} addButton={addButton}>
             <MdCreateNewFolder />
           </CreateButton>
         </div>
@@ -68,8 +65,6 @@ const FolderNavigation = ({
         <FolderNavigationItem
           folders={folders}
           path={[]}
-          setPath={setPath}
-          currentPath={currentPath}
           addButton={addButton}
           removeButton={removeButton}
         />

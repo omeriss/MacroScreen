@@ -11,9 +11,18 @@ interface ButtonsScreenProps {
 const ButtonsScreen = ({ folderScreen }: ButtonsScreenProps) => {
   const keysLength = Object.keys(folderScreen.buttons).length;
 
+  // sort the buttons by index
+  const sortedButtons = useMemo(
+    () =>
+      Object.entries(folderScreen.buttons).sort(
+        ([, a], [, b]) => a.index - b.index
+      ),
+    [folderScreen]
+  );
+
   return (
     <div className={sytles.screen}>
-      {Object.entries(folderScreen.buttons).map(([key, button]) => (
+      {sortedButtons.map(([key, button]) => (
         <Button key={key} {...button} />
       ))}
       {keysLength < ButtonsInScreen &&

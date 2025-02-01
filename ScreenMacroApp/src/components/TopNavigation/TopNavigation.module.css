@@ -1,0 +1,10 @@
+.topNavigation {
+  height: 30px;
+  background-color: var(--primery-color);
+  padding: 3px;
+
+  display: flex;
+  align-items: center;
+
+  color: var(--nav-text-color);
+}

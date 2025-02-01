@@ -6,6 +6,7 @@
 #include "ui/components/StatClock.h"
 #include "config.h"
 #include "utils/UsbManager.h"
+#include "utils/TouchUtils.h"
 
 #define NAME_MAX_LENGTH 20
 
@@ -16,8 +17,6 @@ public:
     void draw() override;
     void setStatistics(int cpu, int gpu, int ram, uint16_t fps);
 private:
-    bool _checkDoubleTap();
-
     StatClock _cpu;
     StatClock _gpu;
     StatClock _ram;

@@ -7,57 +7,14 @@ import styles from "./MainPage.module.css";
 import FolderScreen from "../../interfaces/FolderScreen";
 import { Button, ButtonType, FolderButton } from "../../interfaces/Buttons";
 import { isFolderButton } from "../../utils/buttonTypeUtils";
+import { useRecoilState } from "recoil";
+import { pathState, rootScreenState } from "../../store/store";
+import TopNavigation from "../../components/TopNavigation/TopNavigation";
 
 const MainPage = () => {
-  const [path, setPath] = useState<string[]>([]);
-  const [rootScreen, setRootScreen] = useState<FolderScreen>({
-    buttons: {
-      omer: {
-        label: "omer",
-        background: 0x000000,
-        type: ButtonType.App,
-        index: 0,
-      },
-      omer1: {
-        label: "\\omer",
-        background: 0x000000,
-        type: ButtonType.App,
-        index: 1,
-      },
-      omer2: {
-        label: "folder",
-        background: 0x000000,
-        type: ButtonType.Folder,
-        index: 1,
-        folder: {
-          buttons: {
-            test: {
-              label: "test",
-              background: 0x000000,
-              type: ButtonType.App,
-              index: 0,
-            },
-            test2: {
-              label: "test",
-              background: 0x000000,
-              type: ButtonType.Folder,
-              index: 0,
-              folder: {
-                buttons: {
-                  test3: {
-                    label: "something",
-                    background: 0x000000,
-                    type: ButtonType.App,
-                    index: 0,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+  const [path, setPath] = useRecoilState<string[]>(pathState);
+  const [rootScreen, setRootScreen] =
+    useRecoilState<FolderScreen>(rootScreenState);
 
   const deepCopyToPath = (basePath: string[], screen: FolderScreen) => {
     const newRootScreen = { ...screen };
@@ -81,13 +38,31 @@ const MainPage = () => {
     return [newRootScreen, currentScreen];
   };
 
-  const addButton = (button: Button, key: string, modifyPath?: string[]) => {
+  const addButton = (
+    button: Button,
+    key: string,
+    modifyPath?: string[],
+    index?: number
+  ) => {
     setRootScreen((prev) => {
       const [newRootScreen, currentScreen] = deepCopyToPath(
         modifyPath ?? path,
         prev
       );
+
+      button.index = index ?? Object.keys(currentScreen.buttons).length;
+
+      currentScreen.buttons = Object.fromEntries(
+        Object.entries(currentScreen.buttons).map(([key, button]) => [
+          key,
+          button.index >= button.index
+            ? { ...button, index: button.index + 1 }
+            : button,
+        ])
+      );
+
       currentScreen.buttons[key] = button;
+
       return newRootScreen;
     });
   };
@@ -98,7 +73,28 @@ const MainPage = () => {
         modifyPath ?? path,
         prev
       );
+      const index = currentScreen.buttons[key].index;
       delete currentScreen.buttons[key];
+      currentScreen.buttons = Object.fromEntries(
+        Object.entries(currentScreen.buttons).map(([key, button]) => [
+          key,
+          button.index > index
+            ? { ...button, index: button.index - 1 }
+            : button,
+        ])
+      );
+
+      return newRootScreen;
+    });
+  };
+
+  const editButton = (newButton: Button, modifyPath?: string[]) => {
+    setRootScreen((prev) => {
+      modifyPath = modifyPath ?? path;
+      console.log(modifyPath);
+      const [newRootScreen, currentScreen] = deepCopyToPath(modifyPath, prev);
+      currentScreen.buttons[modifyPath[modifyPath.length - 1]] = newButton;
+
       return newRootScreen;
     });
   };
@@ -123,19 +119,11 @@ const MainPage = () => {
             alt="ScreenMacro Logo"
           />
         </section>
-        <section>File</section>
-        <section>Edit</section>
-        <section>Upload</section>
+        <TopNavigation />
       </nav>
       <div className={styles.contentContainer}>
         <section className={styles.sideSelection}></section>
-        <FolderNavigation
-          folders={rootScreen}
-          setPath={setPath}
-          currentPath={path}
-          addButton={addButton}
-          removeButton={removeButton}
-        />
+        <FolderNavigation addButton={addButton} removeButton={removeButton} />
         <div className={`toolbar-section ${styles.editSection}`}>
           <div className="toolbar-section-head"></div>
           <div className="toolbar-section-subtitle">{path.join(" > ")}</div>
@@ -145,7 +133,7 @@ const MainPage = () => {
             </div>
           </section>
         </div>
-        <Editor />
+        <Editor editButton={editButton} />
       </div>
     </main>
   );

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { Button } from "../../../../interfaces/Buttons";
 import FolderScreen from "../../../../interfaces/FolderScreen";
 import { isFolderButton } from "../../../../utils/buttonTypeUtils";
@@ -6,8 +7,6 @@ import { InnerFolderItem, InnerItem } from "../InnerItem/InnerItem";
 interface FolderNavigationItemProps {
   folders: FolderScreen;
   path: string[];
-  setPath: (path: string[]) => void;
-  currentPath: string[];
   addButton: (button: Button, key: string, modifyPath?: string[]) => void;
   removeButton: (key: string, modifyPath?: string[]) => void;
 }
@@ -15,22 +14,24 @@ interface FolderNavigationItemProps {
 const FolderNavigationItem = ({
   folders,
   path,
-  setPath,
-  currentPath,
   addButton,
   removeButton,
 }: FolderNavigationItemProps) => {
+  const sortedButtons = useMemo(
+    () =>
+      Object.entries(folders.buttons).sort(([, a], [, b]) => a.index - b.index),
+    [folders]
+  );
+
   return (
     <>
-      {Object.entries(folders.buttons).map(([key, button]) =>
+      {sortedButtons.map(([key, button]) =>
         isFolderButton(button) ? (
           <InnerFolderItem
             key={`${path.join("/")}/${key}`}
             keyString={key}
             button={button}
-            currentPath={currentPath}
             path={path}
-            setPath={setPath}
             addButton={addButton}
             removeButton={removeButton}
           />
@@ -39,9 +40,7 @@ const FolderNavigationItem = ({
             key={`${path.join("/")}/${key}`}
             keyString={key}
             button={button}
-            currentPath={currentPath}
             path={path}
-            setPath={setPath}
             addButton={addButton}
             removeButton={removeButton}
           />

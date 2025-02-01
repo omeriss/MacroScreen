@@ -11,28 +11,11 @@ _exit(exit)
     _type = GAMING;
 }
 
-bool GamingScreen::_checkDoubleTap() {
-    bool pressed = ScreenManager::getInstance().isPressed();
-
-    if (pressed) {
-        if (_lifted && millis() - _lastPress < DOUBLE_TAP_THRESHOLD) {
-            _exit();
-            return true;
-        }
-        else {
-            _lifted = false;
-            _lastPress = millis();
-        }
-    }
-    else
-        _lifted = true;
-
-    return false;
-}
-
-
 void GamingScreen::update() {
-    if(_checkDoubleTap()) return;
+    if(checkDoubleTap(_lastPress, _lifted)) {
+        _exit();
+        return;
+    }
 }
 
 void GamingScreen::draw() {

@@ -14,12 +14,12 @@ import {
   MdFolderOpen,
 } from "react-icons/md";
 import FolderNavigationItem from "../FolderNavigationItem/FolderNavigationItem";
+import { useRecoilState } from "recoil";
+import { pathState } from "../../../../store/store";
 
 interface InnerItemProps {
   keyString: string;
   path: string[];
-  setPath: (path: string[]) => void;
-  currentPath: string[];
   addButton: (button: Button, key: string, modifyPath?: string[]) => void;
   removeButton: (key: string, modifyPath?: string[]) => void;
 }
@@ -31,11 +31,11 @@ export const InnerItem = ({
   keyString,
   button,
   path,
-  setPath,
-  currentPath,
   addButton,
   removeButton,
 }: InnerItemProps & { button: Button }) => {
+  const [currentPath, setCurrentPath] = useRecoilState(pathState);
+
   const padding = (INIT_TAB + path.length) * PADDING;
 
   const handleDragStart = (e: React.DragEvent) => {
@@ -54,7 +54,7 @@ export const InnerItem = ({
           isSelected(path, keyString, currentPath) ? styles.selected : ""
         }`}
         style={{ paddingLeft: padding }}
-        onClick={() => setPath([...path, keyString])}
+        onClick={() => setCurrentPath([...path, keyString])}
         draggable
         onDragStart={handleDragStart}
       >
@@ -71,11 +71,10 @@ export const InnerFolderItem = ({
   keyString,
   button,
   path,
-  setPath,
-  currentPath,
   addButton,
   removeButton,
 }: InnerItemProps & { button: FolderButton }) => {
+  const [currentPath, setCurrentPath] = useRecoilState(pathState);
   const [open, setOpen] = useState(false);
 
   const padding = (INIT_TAB + path.length) * PADDING - FOLDER_PADDING_DEC;
@@ -145,7 +144,7 @@ export const InnerFolderItem = ({
         }`}
         style={{ paddingLeft: padding }}
         onDoubleClick={() => setOpen(!open)}
-        onClick={() => setPath([...path, keyString])}
+        onClick={() => setCurrentPath([...path, keyString])}
         draggable
         onDragStart={handleDragStart}
         onDrop={handleDrop}
@@ -168,8 +167,6 @@ export const InnerFolderItem = ({
         <FolderNavigationItem
           folders={button.folder}
           path={[...path, keyString]}
-          setPath={setPath}
-          currentPath={currentPath}
           addButton={addButton}
           removeButton={removeButton}
         />

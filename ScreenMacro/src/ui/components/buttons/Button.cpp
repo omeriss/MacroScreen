@@ -3,25 +3,29 @@
 std::unordered_map<std::string, ButtonImage> Button::imageCache;
 
 
-Button::Button(char *label, uint16_t color, int index) {
-    int row = index / BUTTON_ROWS;
-    int col = index % BUTTON_COLS;
-
-    _xd        = 0;
-    _yd        = 0;
+Button::Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill, uint16_t outlineColor,
+               uint16_t textColor) {
+    _xd = 0;
+    _yd = 0;
     _textdatum = MC_DATUM;
     currstate = false;
     laststate = false;
-    _x1        = BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2;
-    _y1        = BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2;
-    _w            = BUTTON_W;
-    _h            = BUTTON_H;
-    _outlinecolor = TFT_WHITE;
-    _fillcolor    = color;
-    _textcolor    = TFT_WHITE;
-    _textsize     = BUTTON_TEXT_SIZE;
-    _label        = label;
+    _x1 = x;
+    _y1 = y;
+    _w = w;
+    _h = h;
+    _outlinecolor = outlineColor;
+    _fillcolor = fill;
+    _textcolor = textColor;
+    _textsize = BUTTON_TEXT_SIZE;
+    _label = label;
 }
+
+Button::Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill) :
+        Button(label, x, y, w, h, fill, TFT_WHITE, TFT_WHITE) {}
+
+Button::Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h) :
+        Button(label, x, y, w, h, TFT_BLACK, TFT_WHITE, TFT_WHITE) {}
 
 
 void Button::update() {

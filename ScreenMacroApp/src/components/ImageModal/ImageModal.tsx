@@ -18,7 +18,11 @@ const readFile = (file: File): Promise<string> => {
   });
 };
 
-const ImageModal = () => {
+interface ImageModalProps {
+  children: React.ReactNode;
+}
+
+const ImageModal = ({ children }: ImageModalProps) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [imageSrc, setImageSrc] = useState<string>();
   const [crop, setCrop] = useState({ x: 0, y: 0 });
@@ -75,13 +79,9 @@ const ImageModal = () => {
 
       const uint8Array = new Uint8Array(arrayBuffer);
 
-      // tauri save to file in desktop
-
       const path = await join(await documentDir(), "randomimage.png");
 
       await writeFile(path, uint8Array);
-
-      console.log(uint8Array);
     }, "image/png");
   };
 
@@ -107,8 +107,8 @@ const ImageModal = () => {
         )}
       </Modal>
       <div className={styles.childrenContainer}>
-        <label htmlFor="file-upload" className={styles.customFileUpload}>
-          Choose File
+        <label htmlFor="file-upload" onClick={(e) => e.stopPropagation()}>
+          {children}
         </label>
         <input
           type="file"

@@ -15,7 +15,9 @@ struct ButtonImage {
 
 class Button {
 public:
-    Button(char* label, uint16_t color, int index);
+    Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h);
+    Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill);
+    Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill, uint16_t outlineColor, uint16_t textColor);
     void update();
     void draw(bool inverted = false);
     virtual void onPress(){};

@@ -5,7 +5,7 @@
 
 class KeyboardButton : public Button {
 public:
-    KeyboardButton(uint8_t key, char* label, uint16_t color, int index, bool _isConsumerControl = false);
+    KeyboardButton(uint8_t key, bool _isConsumerControl, char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill);
     void onPress() override;
 
 private:

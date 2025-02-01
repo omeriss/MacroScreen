@@ -1,10 +1,15 @@
 :root {
   --primery-color: #282c34;
+  --primery-color-dark: #22252b;
   --secondary-color: #21252b;
   --highlight-color: #2c313a;
 
   --nav-text-color: #636974;
   --nav-text-highlight-color: #d7dad6;
+
+  --marked-color: #093f66;
+
+  user-select: none;
 }
 
 body {

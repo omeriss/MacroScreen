@@ -1,9 +1,15 @@
 .childrenContainer {
-  height: 100%;
-  width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  width: 100%;
+}
+
+.childrenContainer label {
+  z-index: 100;
+}
+
+.childrenContainer label * {
+  z-index: -100;
+  position: relative;
 }
 
 .modal {
@@ -37,4 +43,6 @@
 
 .fileUpload {
   display: none;
+  width: 0;
+  height: 0;
 }

@@ -1,3 +1,18 @@
 .toolbar {
   width: 400px;
 }
+
+.editor {
+  height: 100%;
+  padding: 10px;
+  overflow: auto;
+}
+
+.editor label {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.editor > div {
+  margin-bottom: 20px;
+}

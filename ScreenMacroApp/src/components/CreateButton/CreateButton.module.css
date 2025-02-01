@@ -44,3 +44,67 @@
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 999;
 }
+
+.fieldset {
+  border: 2px var(--marked-color) solid;
+  font-size: 0.75rem;
+  border-radius: 5px;
+  height: 40px;
+  color: white;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.legend {
+  color: var(--marked-color);
+}
+.fieldset input[type="text"] {
+  /* reset the field */
+  outline: none;
+  border: none;
+  background: transparent;
+
+  padding: 5px 10px 10px 6px;
+  font-size: 0.75rem;
+  color: white;
+  font-size: 16px;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+  button {
+    background-color: #34383f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    min-width: 50px;
+  }
+  button:hover {
+    background-color: #444950;
+    transition: 0.3s;
+  }
+}
+
+.fieldset select {
+  outline: none;
+  border: none;
+  background: transparent;
+  padding: 5px 10px 10px 6px;
+  font-size: 0.75rem;
+  color: white;
+  font-size: 16px;
+  width: 100%;
+
+  option {
+    background-color: var(--secondary-color);
+    color: white;
+    width: 100%;
+  }
+}
