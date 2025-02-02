@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "./CreateButton.module.css";
+import popupStyles from "../../styles/popup.module.css";
 import Modal from "react-modal";
 import {
   Button,
@@ -44,16 +44,16 @@ const CreateButton = ({ children, type, addButton }: CreateButtonProps) => {
       <Modal
         isOpen={modalIsOpen}
         onRequestClose={() => setIsOpen(false)}
-        className={styles.modal}
-        overlayClassName={styles.overlay}
+        className={popupStyles.modal}
+        overlayClassName={popupStyles.overlay}
         appElement={document.getElementById("root") as HTMLElement}
       >
         <section>
           <h1>New {type}</h1>
-          <fieldset className={styles.fieldset}>
+          <fieldset className={popupStyles.fieldset}>
             <legend>Name:</legend>
             <input
-              className={styles.input}
+              className={popupStyles.input}
               name="input"
               placeholder="Enter name..."
               type="text"
@@ -62,10 +62,10 @@ const CreateButton = ({ children, type, addButton }: CreateButtonProps) => {
             />
           </fieldset>
           {type === CreateType.BUTTON && (
-            <fieldset className={styles.fieldset}>
+            <fieldset className={popupStyles.fieldset}>
               <legend>Type:</legend>
               <select
-                className={styles.select}
+                className={popupStyles.select}
                 onChange={(e) => setButtonType(e.target.value as ButtonType)}
                 value={buttonType}
               >
@@ -80,7 +80,7 @@ const CreateButton = ({ children, type, addButton }: CreateButtonProps) => {
               </select>
             </fieldset>
           )}
-          <div className={styles.buttons}>
+          <div className={popupStyles.buttons}>
             <button onClick={handleAddButton}>Ok</button>
             <button onClick={() => setIsOpen(false)}>Cancel</button>
           </div>

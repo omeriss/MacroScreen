@@ -7,6 +7,14 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }
+    },
+    "ScreenMacroUpload": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "commandLineArgs": "upload C:\\Users\\omer1\\Downloads\\test1"
     }
   }
 }

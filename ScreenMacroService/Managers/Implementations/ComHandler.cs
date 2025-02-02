@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Ports;
 using System.Management;
@@ -50,11 +51,11 @@ public class ComHandler(IConfiguration configuration) : IComHandler
         if (b == EscapeByte)
         {
             b = _serialPort.ReadByte();
+            checksum ^= b;
             b ^= 0x20;
         }
-        
-        
-        checksum ^= b;
+        else
+            checksum ^= b;
         
         return b;
     }
@@ -132,6 +133,29 @@ public class ComHandler(IConfiguration configuration) : IComHandler
         bytes.Add(EndByte);
         
         _serialPort.Write(bytes.ToArray(), 0, bytes.Count);
+    }
+
+    public bool WaitForAck(int id)
+    {
+        if (_serialPort is null) throw new SerialPortException("Serial port not open");
+
+        Stopwatch stopwatch = new();
+        stopwatch.Start();
+
+        while (stopwatch.ElapsedMilliseconds < _comSettings.AckTimeout)
+        {
+            try
+            {
+                var command = GetCommand();
+                if (command.Type == CommandType.Acknowledge && id == command.Read<short>())
+                    return true;
+                if (command.Type == CommandType.Log)
+                    Console.WriteLine(Encoding.UTF8.GetString(command.Payload));
+            }
+            catch (CommandReadException) { }
+        }
+
+        return false;
     }
 
     public void Start()

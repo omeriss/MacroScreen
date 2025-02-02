@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ScreenMacroLogo from "../../assets/ScreenMacro.png";
 import ButtonsScreen from "../../components/ButtonsScreen/ButtonsScreen";
 import Editor from "../../components/Editor/Editor";
@@ -10,11 +10,17 @@ import { isFolderButton } from "../../utils/buttonTypeUtils";
 import { useRecoilState } from "recoil";
 import { pathState, rootScreenState } from "../../store/store";
 import TopNavigation from "../../components/TopNavigation/TopNavigation";
+import useProject from "../../components/hooks/project";
 
 const MainPage = () => {
   const [path, setPath] = useRecoilState<string[]>(pathState);
   const [rootScreen, setRootScreen] =
     useRecoilState<FolderScreen>(rootScreenState);
+  const project = useProject();
+
+  useEffect(() => {
+    project.tryOpenLastProject();
+  }, []);
 
   const deepCopyToPath = (basePath: string[], screen: FolderScreen) => {
     const newRootScreen = { ...screen };

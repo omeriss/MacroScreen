@@ -58,3 +58,8 @@ export const pathState = atom<string[]>({
   key: "path",
   default: [],
 });
+
+export const savePathState = atom<string | null>({
+  key: "projectPath",
+  default: null,
+});

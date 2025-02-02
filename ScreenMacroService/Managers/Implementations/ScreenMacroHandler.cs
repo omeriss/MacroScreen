@@ -5,17 +5,21 @@ using Common.Exceptions;
 using Common.Models;
 using Managers.Interfaces;
 using System.Linq;
+using Common.Models.Settings;
 using Common.Utils;
+using Microsoft.Extensions.Configuration;
 
 namespace Managers.Implementations;
 
-public class ScreenMacroHandler(IComHandler com, IActions actions) : IScreenMacroHandler
+public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguration config, IFileManager fileManager) : IScreenMacroHandler
 {
-    private IComHandler _com = com;
-    private IActions _actions = actions;
+    private readonly IComHandler _com = com;
+    private readonly IActions _actions = actions;
     private Dictionary<CommandType, MethodInfo> _actionMethods = actions.GetType().GetMethods()
         .Where(m => m.GetCustomAttribute<CommandHandlerAttribute>() is not null)
         .ToDictionary(m => m.GetCustomAttribute<CommandHandlerAttribute>()!.Type, m => m);
+    private readonly UploadSettings _uploadSettings = config.GetSection("Upload").Get<UploadSettings>()!;
+    private readonly IFileManager _fileManager = fileManager;
 
     public void ExecuteCommand()
     {
@@ -50,6 +54,18 @@ public class ScreenMacroHandler(IComHandler com, IActions actions) : IScreenMacr
                 Thread.Sleep(retryDelay);
             }
         }
+    }
+
+    public bool UploadCode(UploadConfig config)
+    {
+        var jsonPath = Path.Combine(config.UploadPath, _uploadSettings.JsonPath);
+        var json = File.ReadAllText(jsonPath);
+        var code = Encoding.ASCII.GetBytes(json);
+
+        if (!_fileManager.UploadFile(_uploadSettings.JsonPath, code)) return false;
+        _fileManager.LogFile(_uploadSettings.JsonPath);
+
+        return true;
     }
     
     public void Dispose()

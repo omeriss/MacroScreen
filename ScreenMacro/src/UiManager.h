@@ -9,6 +9,7 @@
 #include "ui/screens/GamingScreen.h"
 #include "ui/screens/ButtonsScreen.h"
 #include "utils/UsbManager.h"
+#include "LittleFS.h"
 
 class UiManager {
 public:

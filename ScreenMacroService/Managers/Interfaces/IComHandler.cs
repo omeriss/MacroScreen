@@ -9,4 +9,5 @@ public interface IComHandler : IDisposable
     public void Stop();
     public void SendCommand(Command command);
     public Command GetCommand();
+    public bool WaitForAck(int id);
 }

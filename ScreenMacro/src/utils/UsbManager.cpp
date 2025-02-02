@@ -31,12 +31,14 @@ int UsbManager::readByteWithChecksum(uint8_t& checksum) {
     if (b == -1) return -1;
 
     if (b == ESCAPE_BYTE) {
-        b = cdc.read();
+        b = timedRead();
         if (b == -1) return -1;
+        checksum ^= b;
         b ^= 0x20;
     }
+    else
+        checksum ^= b;
 
-    checksum ^= b;
     return b;
 }
 
@@ -111,6 +113,10 @@ void UsbManager::sendCommand(CommandType type, uint8_t* payload, size_t length){
     _txBuffer[index++] = END_BYTE;
 
     cdc.write(_txBuffer, index);
+}
+
+void UsbManager::sendLog(const char* message) {
+    sendCommand(CommandType::Log, (uint8_t*)message, strlen(message));
 }
 
 void UsbManager::sendCommand(Command command) {

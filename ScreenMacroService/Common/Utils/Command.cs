@@ -18,7 +18,8 @@ public class Command(CommandType type, List<byte> payload)
         { typeof(uint), (buf, val) => buf._payload.AddRange(BitConverter.GetBytes((uint)val)) },
         { typeof(ulong), (buf, val) => buf._payload.AddRange(BitConverter.GetBytes((ulong)val)) },
         { typeof(bool), (buf, val) => buf._payload.Add((byte)((bool)val ? 1 : 0)) },
-        { typeof(char), (buf, val) => buf._payload.AddRange(BitConverter.GetBytes((char)val)) }
+        { typeof(char), (buf, val) => buf._payload.AddRange(BitConverter.GetBytes((char)val)) },
+        { typeof(string), (buf, val) => buf.WriteString((string)val) },
     };
     
     private static T ReadPrimitive<T>(Command buf, int size, Func<byte[], int, T> converter)
@@ -41,7 +42,8 @@ public class Command(CommandType type, List<byte> payload)
         { typeof(uint), buf => ReadPrimitive<uint>(buf, sizeof(uint), BitConverter.ToUInt32) },
         { typeof(ulong), buf => ReadPrimitive<ulong>(buf, sizeof(ulong), BitConverter.ToUInt64) },
         { typeof(bool), buf => buf._payload[buf._position++] != 0 },
-        { typeof(char), buf => ReadPrimitive<char>(buf, sizeof(char), BitConverter.ToChar) }
+        { typeof(char), buf => ReadPrimitive<char>(buf, sizeof(char), BitConverter.ToChar) },
+        { typeof(string), buf => buf.ReadString() }
     };
     public CommandType Type { get; set; } = type;
     private readonly List<byte> _payload = payload;
@@ -61,10 +63,10 @@ public class Command(CommandType type, List<byte> payload)
     {
     }
 
-    public void Write<T>(T value) where T : struct
+    public void Write<T>(T value)
     {
         if (TypeWriters.TryGetValue(typeof(T), out var writer))
-            writer(this, value);
+            writer(this, value!);
         else
             throw new NotSupportedException($"Type {typeof(T)} is not supported.");
     }
@@ -87,7 +89,7 @@ public class Command(CommandType type, List<byte> payload)
         }
     }
     
-    public T Read<T>() where T : struct
+    public T Read<T>()
     {
         if (TypeReaders.TryGetValue(typeof(T), out var reader))
             return (T)reader(this);
@@ -114,5 +116,10 @@ public class Command(CommandType type, List<byte> payload)
     public void Reset()
     {
         _position = 0;
+    }
+    
+    public bool IsEnd()
+    {
+        return _position >= _payload.Count;
     }
 }

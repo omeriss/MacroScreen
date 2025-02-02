@@ -12,6 +12,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IScreenMacroHandler, ScreenMacroHandler>();
         services.AddSingleton<IActions, Actions>();
         services.AddSingleton<IStatisticsHandler, StatisticsHandler>();
+        services.AddSingleton<IFileManager, FileManager>();
         
         return services;
     }

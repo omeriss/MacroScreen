@@ -5,6 +5,7 @@ void UiManager::update() {
     ScreenManager::getInstance().updateTouch();
     _currentScreen->update();
 
+    static char path[128];
     auto command = UsbManager::getInstance().readCommand();
 
     if(command.type != CommandType::NoData){
@@ -26,6 +27,75 @@ void UiManager::update() {
                     UsbManager::getInstance().sendCommand(CommandType::StopStatistics, nullptr, 0);
                 }
                 break;
+            case CommandType::Ls: {
+                fs::File dir = LittleFS.open("/");
+
+                if (!dir)
+                    break;
+
+                Command cmd(CommandType::Ls);
+
+                while (true) {
+                    fs::File entry = dir.openNextFile();
+
+                    if (!entry) break;
+
+                    const char *name = entry.name();
+                    const int len = strlen(name);
+                    cmd.writeArr((uint8_t *) name, len);
+                }
+                UsbManager::getInstance().sendCommand(cmd);
+
+                break;
+            }
+            case CommandType::StartWriteFile: {
+                uint16_t parts;
+                command >> parts;
+                command.readString(path);
+
+                fs::File file = LittleFS.open(path, "w");
+
+                if (!file) {
+                    UsbManager::getInstance().sendLog("Failed to open file");
+                    UsbManager::getInstance().sendLog(path);
+                    break;
+                }
+
+                uint16_t i = 0;
+                UsbManager::getInstance().sendCommand(CommandType::Acknowledge, (uint8_t*)&i, sizeof(i));
+
+                for (i++; i <= parts; i++) {
+                    auto part = UsbManager::getInstance().readCommand();
+                    if (part.type != CommandType::SendFilePart) {
+                        i--;
+                        continue;
+                    }
+
+                    file.write(part.payload, part.length);
+
+                    UsbManager::getInstance().sendCommand(CommandType::Acknowledge, (uint8_t*)&i, sizeof(i));
+                }
+
+                file.close();
+                break;
+            }
+            case CommandType::LogFile:
+            {
+                command.readString(path);
+                fs::File file = LittleFS.open(path, "r");
+
+                if (!file) {
+                    UsbManager::getInstance().sendLog("Failed to open file");
+                    break;
+                }
+
+                Command cmd(CommandType::Log);
+                auto len = file.read(cmd.payload, DEFAULT_BUFFER_SIZE);
+                cmd.length = len;
+                file.close();
+                UsbManager::getInstance().sendCommand(cmd);
+                break;
+            }
             case CommandType::Boot:
                 REG_WRITE(RTC_CNTL_OPTION1_REG, RTC_CNTL_FORCE_DOWNLOAD_BOOT);
                 esp_restart();

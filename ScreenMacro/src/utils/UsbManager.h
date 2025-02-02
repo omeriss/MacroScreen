@@ -26,11 +26,14 @@ public:
         return instance;
     }
 
+    void sendLog(const char *message);
+
     void setup();
 
     Command readCommand();
 
     void sendCommand(CommandType type, uint8_t *payload, size_t length);
+
     void sendCommand(Command command);
 
     USBHIDKeyboard keyboard = USBHIDKeyboard();
