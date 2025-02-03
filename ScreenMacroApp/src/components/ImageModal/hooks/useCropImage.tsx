@@ -1,8 +1,11 @@
-import { documentDir, join } from "@tauri-apps/api/path";
-import { writeFile } from "@tauri-apps/plugin-fs";
+import { join } from "@tauri-apps/api/path";
+import { writeFile, readDir } from "@tauri-apps/plugin-fs";
 import { useEffect, useRef, useState } from "react";
 import { Area, MediaSize } from "react-easy-crop";
 import { IMAGE_SIZE } from "../ImageModal.config";
+import { useRecoilValue } from "recoil";
+import { savePathState } from "../../../store/store";
+import { IMAGES_FOLDER_NAME } from "../../../config/projectfolder.config";
 
 const readFile = (file: File): Promise<string> => {
   return new Promise((resolve) => {
@@ -16,7 +19,10 @@ const readFile = (file: File): Promise<string> => {
   });
 };
 
-const useCropImage = (setIsOpen: (open: boolean) => void) => {
+const useCropImage = (
+  setIsOpen: (open: boolean) => void,
+  setLabel: (label: string) => void
+) => {
   const [imageSrc, setImageSrc] = useState<string>();
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [rotation, setRotation] = useState(0);
@@ -26,6 +32,7 @@ const useCropImage = (setIsOpen: (open: boolean) => void) => {
   const cropContainerRef = useRef<HTMLDivElement>(null);
   const [minZoom, setMinZoom] = useState(1);
   const [lastMediaSize, setLastMediaSize] = useState<MediaSize>();
+  const savePath = useRecoilValue(savePathState);
 
   const onFileChange: React.ChangeEventHandler<HTMLInputElement> = async (
     e
@@ -44,7 +51,7 @@ const useCropImage = (setIsOpen: (open: boolean) => void) => {
   };
 
   const saveImage = async () => {
-    if (!imageSrc || !croppedAreaPixels) return;
+    if (!imageSrc || !croppedAreaPixels || !savePath) return;
 
     const image = new Image();
     image.src = imageSrc;
@@ -67,16 +74,27 @@ const useCropImage = (setIsOpen: (open: boolean) => void) => {
       IMAGE_SIZE
     );
 
+    const imagesPath = await join(savePath, IMAGES_FOLDER_NAME);
+    const files = await readDir(imagesPath);
+
+    let index = 0;
+
+    while (files.find((file) => file.name === `img-${index}.png`)) {
+      index++;
+    }
+
+    const name = `img-${index}.png`;
+    const path = await join(imagesPath, name);
+
     canvas.toBlob(async (blob) => {
       const arrayBuffer = await blob?.arrayBuffer();
 
       if (!arrayBuffer) return;
 
       const uint8Array = new Uint8Array(arrayBuffer);
-
-      const path = await join(await documentDir(), "randomimage.png");
-
       await writeFile(path, uint8Array);
+
+      await setLabel(`\\${name}`);
     }, "image/png");
   };
 

@@ -33,7 +33,7 @@ const EditLabel = ({ value, setValue }: EditLabelProps) => {
         />
       </div>
       <div>
-        <ImageModal>
+        <ImageModal setLabel={setValue}>
           <input
             type="checkbox"
             id="label"

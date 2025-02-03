@@ -8,6 +8,9 @@ import {
   BORDER_RADIUS_PERCENTAGE,
   TEXT_HIGHT_PERCENTAGE,
 } from "./Button.config";
+import { useRecoilValue } from "recoil";
+import { savePathState } from "../../store/store";
+import { IMAGES_FOLDER_NAME } from "../../config/projectfolder.config";
 
 interface ButtonProps {
   background?: number;
@@ -20,6 +23,7 @@ const Button = ({ background, label, disabled }: ButtonProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [fontSize, setFontSize] = useState(0);
   const [borderRadius, setBorderRadius] = useState(0);
+  const savePath = useRecoilValue(savePathState);
 
   const backgroundColor = useMemo(
     () => `#${(background ?? 0)?.toString(16).padStart(6, "0")}`,
@@ -27,15 +31,18 @@ const Button = ({ background, label, disabled }: ButtonProps) => {
   );
 
   const updatePaths = async () => {
-    const path = await join(await documentDir(), "image.png");
+    if (!savePath || !label || !label.startsWith("\\")) {
+      setImagePath(null);
+      return;
+    }
+
+    const path = await join(savePath, IMAGES_FOLDER_NAME, label);
     setImagePath(convertFileSrc(path));
   };
 
   const isImage = label?.startsWith("\\");
 
   useEffect(() => {
-    updatePaths();
-
     const resizeText = () => {
       if (containerRef.current) {
         const containerHeight = containerRef.current.offsetHeight;
@@ -58,6 +65,10 @@ const Button = ({ background, label, disabled }: ButtonProps) => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    updatePaths();
+  }, [savePath, label]);
 
   return (
     <div

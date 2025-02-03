@@ -8,27 +8,16 @@ import { IMAGE_SIZE } from "./ImageModal.config";
 import popupStyles from "./../../styles/popup.module.css";
 import useCropImage from "./hooks/useCropImage";
 
-const readFile = (file: File): Promise<string> => {
-  return new Promise((resolve) => {
-    const reader = new FileReader();
-    reader.addEventListener(
-      "load",
-      () => resolve(reader.result as string),
-      false
-    );
-    reader.readAsDataURL(file);
-  });
-};
-
 interface ImageModalProps {
   children: React.ReactNode;
+  setLabel: (label: string) => void;
 }
 
-const ImageModal = ({ children }: ImageModalProps) => {
+const ImageModal = ({ children, setLabel }: ImageModalProps) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [selectedUploadType, setSelectedUploadType] =
     useState<string>("upload");
-  const cropImage = useCropImage(setIsOpen);
+  const cropImage = useCropImage(setIsOpen, setLabel);
 
   const updateSelectedUploadType = (
     radioEvent: React.ChangeEvent<HTMLInputElement>
@@ -138,7 +127,16 @@ const ImageModal = ({ children }: ImageModalProps) => {
                         />
                       </div>
                       <div className={popupStyles.buttons}>
-                        <button onClick={() => close}>Save </button>
+                        <button
+                          onClick={() => {
+                            cropImage.saveImage().then(() => {
+                              cropImage.cleanMedia();
+                              close();
+                            });
+                          }}
+                        >
+                          Save
+                        </button>
                         <button onClick={cropImage.cleanMedia}>Cancel</button>
                       </div>
                     </>
