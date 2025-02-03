@@ -10,7 +10,7 @@ import { isFolderButton } from "../../utils/buttonTypeUtils";
 import { useRecoilState } from "recoil";
 import { pathState, rootScreenState } from "../../store/store";
 import TopNavigation from "../../components/TopNavigation/TopNavigation";
-import useProject from "../../components/hooks/project";
+import useProject from "../../hooks/project";
 
 const MainPage = () => {
   const [path, setPath] = useRecoilState<string[]>(pathState);

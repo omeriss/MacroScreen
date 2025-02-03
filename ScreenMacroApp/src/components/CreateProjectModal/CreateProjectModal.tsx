@@ -4,7 +4,7 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { useState } from "react";
 import { exists } from "@tauri-apps/plugin-fs";
 import { join } from "@tauri-apps/api/path";
-import useProject from "../hooks/project";
+import useProject from "../../hooks/project";
 import styles from "./CreateProjectModal.module.css";
 
 interface CreateModelProps {

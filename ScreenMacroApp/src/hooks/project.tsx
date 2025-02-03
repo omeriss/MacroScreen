@@ -14,9 +14,9 @@ import {
   IMAGES_FOLDER_NAME,
   JSON_FILE_NAME,
   LAST_PROJECTS,
-} from "../../config/projectfolder.config";
-import { savePathState, pathState, rootScreenState } from "../../store/store";
-import FolderScreen from "../../interfaces/FolderScreen";
+} from "../config/projectfolder.config";
+import { savePathState, pathState, rootScreenState } from "../store/store";
+import FolderScreen from "../interfaces/FolderScreen";
 
 const useProject = () => {
   const [savePath, setSavePath] = useRecoilState(savePathState);

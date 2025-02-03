@@ -3,7 +3,7 @@ import CreateProjectModal from "../CreateProjectModal/CreateProjectModal";
 import ExpandedButton from "../ExpandedButton/ExpandedButton";
 import styles from "./TopNavigation.module.css";
 
-import useProject from "../hooks/project";
+import useProject from "../../hooks/project";
 
 const TopNavigation = () => {
   const [createProjectOpen, setCreateProjectOpen] = useState(false);

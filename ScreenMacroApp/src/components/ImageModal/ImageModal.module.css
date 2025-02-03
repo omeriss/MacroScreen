@@ -3,11 +3,11 @@
   width: 100%;
 }
 
-.childrenContainer label {
-  z-index: 100;
+.childrenContainer div {
+  z-index: 0;
 }
 
-.childrenContainer label * {
+.childrenContainer div * {
   z-index: -100;
   position: relative;
 }
@@ -18,17 +18,22 @@
   left: 0;
   z-index: 1000;
   width: 50%;
-  height: 50%;
+  height: 60%;
   background-color: var(--secondary-color);
   display: flex;
   justify-content: center;
   align-items: center;
 
+  border: none;
+  outline: none;
+  padding: 20px;
+  border-radius: 5px;
+
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   margin-right: -50%;
-  border: 1px solid white;
+  color: white;
 }
 
 .customFileUpload {
@@ -45,4 +50,69 @@
   display: none;
   width: 0;
   height: 0;
+}
+
+.radioInputs {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  border-radius: 0.5rem;
+  background-color: var(--primery-color);
+  box-sizing: border-box;
+  box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+  padding: 0.25rem;
+  width: 90%;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+
+.radioInputs .radio {
+  flex: 1 1 auto;
+  text-align: center;
+}
+
+.radioInputs .radio input {
+  display: none;
+}
+
+.radioInputs .radio .name {
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: none;
+  padding: 0.5rem 0;
+  color: var(--nav-text-color);
+  transition: all 0.15s ease-in-out;
+}
+
+.radioInputs .radio input:checked + .name {
+  background-color: var(--highlight-color);
+  font-weight: 600;
+}
+
+.modalMainSection {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+}
+
+.cropperContainer {
+  margin-top: 15px;
+  width: 100%;
+  flex-grow: 1;
+  position: relative;
+}
+
+.uploadLabel {
+  width: 100%;
+  text-align: center;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px dashed var(--marked-color);
 }
