@@ -1,0 +1,77 @@
+:root {
+  --primery-color: #282c34;
+  --primery-color-dark: #22252b;
+  --secondary-color: #21252b;
+  --highlight-color: #2c313a;
+
+  --nav-text-color: #636974;
+  --nav-text-highlight-color: #d7dad6;
+
+  --marked-color: #093f66;
+
+  user-select: none;
+}
+
+body {
+  font-family: "Roboto", sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.ReactModal__Overlay--after-open {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.toolbar-section {
+  background-color: var(--primery-color);
+  height: 100%;
+  color: var(--nav-text-color);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.toolbar-section-head {
+  background-color: var(--secondary-color);
+  height: 35px;
+  color: var(--nav-text-color);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  h2 {
+    margin-left: 15px;
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+.toolbar-section-subtitle {
+  display: flex;
+  align-items: center;
+  height: 26px;
+  color: var(--nav-text-color);
+  font-size: 12px;
+  width: 100%;
+
+  h3 {
+    margin: 0;
+    margin-left: 15px;
+    font-size: 14px;
+    font-weight: 900;
+  }
+}
+
+.toolbar-section-main {
+  background-color: var(--secondary-color);
+  color: var(--nav-text-color);
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+
+  flex-grow: 1;
+}

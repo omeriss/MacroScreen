@@ -1,0 +1,27 @@
+.button {
+  width: 29%;
+
+  height: 25%;
+
+  border-radius: 25px;
+
+  border: 1px solid white;
+  color: white;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  container-name: bttn;
+  font-size: min(4vh, 4vw);
+
+  user-select: none;
+}
+
+.img {
+  height: 85%;
+}
+
+.disabled {
+  border: none;
+}

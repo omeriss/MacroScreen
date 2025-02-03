@@ -1,0 +1,20 @@
+.screen {
+  margin: auto;
+  margin-top: 30px;
+
+  max-height: 60%;
+  max-width: 60%;
+  aspect-ratio: 3/2;
+  width: auto;
+  height: auto;
+
+  border-radius: 10px;
+  border: 1px solid white;
+
+  background-color: black;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-content: space-evenly;
+}
