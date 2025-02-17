@@ -127,7 +127,7 @@ const TopNavigation = () => {
         onClose={() => setCreateProjectOpen(false)}
       />
       <ExpandedButton buttons={fileButtons}>File</ExpandedButton>
-      <ExpandedButton>Edit</ExpandedButton>
+      <ExpandedButton buttons={[]}>Edit</ExpandedButton>
       <ExpandedButton
         buttons={[
           {
