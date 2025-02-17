@@ -3,7 +3,7 @@
 std::unordered_map<std::string, ButtonImage> Button::imageCache;
 
 
-Button::Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill, uint16_t outlineColor,
+Button::Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill, uint16_t outlineColor,
                uint16_t textColor) {
     _xd = 0;
     _yd = 0;
@@ -21,10 +21,10 @@ Button::Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t
     _label = label;
 }
 
-Button::Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill) :
+Button::Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill) :
         Button(label, x, y, w, h, fill, TFT_WHITE, TFT_WHITE) {}
 
-Button::Button(char *label, int16_t x, int16_t y, int16_t w, int16_t h) :
+Button::Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h) :
         Button(label, x, y, w, h, TFT_BLACK, TFT_WHITE, TFT_WHITE) {}
 
 
@@ -103,7 +103,7 @@ void Button::drawImage() {
 
     if (rc == PNG_SUCCESS) {
         screenManager.tft.startWrite();
-        Pos pos = {_x1 + (_w - PngUtils::png.getWidth()) / 2, _y1 + (_h - PngUtils::png.getHeight()) / 2};
+        ImgDrawData pos = {_x1 + (_w - PngUtils::png.getWidth()) / 2, _y1 + (_h - PngUtils::png.getHeight()) / 2, _fillcolor};
         rc = PngUtils::png.decode(&pos, 0);
         PngUtils::png.close();
         screenManager.tft.endWrite();

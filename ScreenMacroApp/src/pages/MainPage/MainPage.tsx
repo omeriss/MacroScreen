@@ -8,102 +8,28 @@ import FolderScreen from "../../interfaces/FolderScreen";
 import { Button, ButtonType, FolderButton } from "../../interfaces/Buttons";
 import { isFolderButton } from "../../utils/buttonTypeUtils";
 import { useRecoilState } from "recoil";
-import { pathState, rootScreenState } from "../../store/store";
+import {
+  pathState,
+  rootScreenState,
+  selectedNavigationPanelState,
+} from "../../store/store";
 import TopNavigation from "../../components/TopNavigation/TopNavigation";
 import useProject from "../../hooks/project";
+import { MdContentCopy, MdUpload, MdHistory } from "react-icons/md";
+import { navigationPanels } from "../../config/navigationPanels";
 
 const MainPage = () => {
   const [path, setPath] = useRecoilState<string[]>(pathState);
   const [rootScreen, setRootScreen] =
     useRecoilState<FolderScreen>(rootScreenState);
   const project = useProject();
+  const [selectedNavigationPanel, setNavigationPanel] = useRecoilState(
+    selectedNavigationPanelState
+  );
 
   useEffect(() => {
     project.tryOpenLastProject();
   }, []);
-
-  const deepCopyToPath = (basePath: string[], screen: FolderScreen) => {
-    const newRootScreen = { ...screen };
-
-    let currentScreen = newRootScreen;
-
-    basePath.forEach((folder) => {
-      if (isFolderButton(currentScreen.buttons[folder])) {
-        currentScreen.buttons = { ...currentScreen.buttons };
-        currentScreen.buttons[folder] = { ...currentScreen.buttons[folder] };
-        (currentScreen.buttons[folder] as FolderButton).folder = {
-          ...(currentScreen.buttons[folder] as FolderButton).folder,
-        };
-
-        currentScreen = (currentScreen.buttons[folder] as FolderButton).folder;
-      }
-    });
-
-    currentScreen.buttons = { ...currentScreen.buttons };
-
-    return [newRootScreen, currentScreen];
-  };
-
-  const addButton = (
-    button: Button,
-    key: string,
-    modifyPath?: string[],
-    index?: number
-  ) => {
-    setRootScreen((prev) => {
-      const [newRootScreen, currentScreen] = deepCopyToPath(
-        modifyPath ?? path,
-        prev
-      );
-
-      button.index = index ?? Object.keys(currentScreen.buttons).length;
-
-      currentScreen.buttons = Object.fromEntries(
-        Object.entries(currentScreen.buttons).map(([key, button]) => [
-          key,
-          button.index >= button.index
-            ? { ...button, index: button.index + 1 }
-            : button,
-        ])
-      );
-
-      currentScreen.buttons[key] = button;
-
-      return newRootScreen;
-    });
-  };
-
-  const removeButton = (key: string, modifyPath?: string[]) => {
-    setRootScreen((prev) => {
-      const [newRootScreen, currentScreen] = deepCopyToPath(
-        modifyPath ?? path,
-        prev
-      );
-      const index = currentScreen.buttons[key].index;
-      delete currentScreen.buttons[key];
-      currentScreen.buttons = Object.fromEntries(
-        Object.entries(currentScreen.buttons).map(([key, button]) => [
-          key,
-          button.index > index
-            ? { ...button, index: button.index - 1 }
-            : button,
-        ])
-      );
-
-      return newRootScreen;
-    });
-  };
-
-  const editButton = (newButton: Button, modifyPath?: string[]) => {
-    setRootScreen((prev) => {
-      modifyPath = modifyPath ?? path;
-      console.log(modifyPath);
-      const [newRootScreen, currentScreen] = deepCopyToPath(modifyPath, prev);
-      currentScreen.buttons[modifyPath[modifyPath.length - 1]] = newButton;
-
-      return newRootScreen;
-    });
-  };
 
   const currentScreen = useMemo(() => {
     return path.reduce(
@@ -128,8 +54,23 @@ const MainPage = () => {
         <TopNavigation />
       </nav>
       <div className={styles.contentContainer}>
-        <section className={styles.sideSelection}></section>
-        <FolderNavigation addButton={addButton} removeButton={removeButton} />
+        <section className={styles.sideSelection}>
+          {navigationPanels.map((icon, index) => {
+            const Icon = icon.icon;
+            return (
+              <div
+                key={index}
+                className={`${styles.selectionItem} ${
+                  selectedNavigationPanel === index ? styles.iconSelected : ""
+                }`}
+                onClick={() => setNavigationPanel(index)}
+              >
+                <Icon />
+              </div>
+            );
+          })}
+        </section>
+        {navigationPanels[selectedNavigationPanel].component({})}
         <div className={`toolbar-section ${styles.editSection}`}>
           <div className="toolbar-section-head"></div>
           <div className="toolbar-section-subtitle">{path.join(" > ")}</div>
@@ -139,7 +80,7 @@ const MainPage = () => {
             </div>
           </section>
         </div>
-        <Editor editButton={editButton} />
+        <Editor />
       </div>
     </main>
   );

@@ -116,3 +116,27 @@
   align-items: center;
   border: 1px dashed var(--marked-color);
 }
+
+.usedContainer {
+  width: 100%;
+  height: 100%;
+  overflow-y: scroll;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+
+  div {
+    width: 30%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+
+    img:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+.usedContainer::-webkit-scrollbar {
+  display: none;
+}

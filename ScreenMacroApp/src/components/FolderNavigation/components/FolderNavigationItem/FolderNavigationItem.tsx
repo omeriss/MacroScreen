@@ -7,16 +7,9 @@ import { InnerFolderItem, InnerItem } from "../InnerItem/InnerItem";
 interface FolderNavigationItemProps {
   folders: FolderScreen;
   path: string[];
-  addButton: (button: Button, key: string, modifyPath?: string[]) => void;
-  removeButton: (key: string, modifyPath?: string[]) => void;
 }
 
-const FolderNavigationItem = ({
-  folders,
-  path,
-  addButton,
-  removeButton,
-}: FolderNavigationItemProps) => {
+const FolderNavigationItem = ({ folders, path }: FolderNavigationItemProps) => {
   const sortedButtons = useMemo(
     () =>
       Object.entries(folders.buttons).sort(([, a], [, b]) => a.index - b.index),
@@ -32,8 +25,6 @@ const FolderNavigationItem = ({
             keyString={key}
             button={button}
             path={path}
-            addButton={addButton}
-            removeButton={removeButton}
           />
         ) : (
           <InnerItem
@@ -41,8 +32,6 @@ const FolderNavigationItem = ({
             keyString={key}
             button={button}
             path={path}
-            addButton={addButton}
-            removeButton={removeButton}
           />
         )
       )}

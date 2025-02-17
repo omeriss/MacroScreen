@@ -2,7 +2,6 @@
 
 #include <vector>
 #include "Screen.h"
-#include <TFT_eWidget.h>
 #include "ui/components/StatClock.h"
 #include "config.h"
 #include "utils/UsbManager.h"

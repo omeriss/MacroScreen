@@ -23,12 +23,23 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _screenMacroHandler.Start();
-        
         while (!stoppingToken.IsCancellationRequested)
         {
-            _screenMacroHandler.ExecuteCommand();
-            await Task.Delay(100, stoppingToken);
+            try
+            {
+                _screenMacroHandler.Start();
+
+                while (!stoppingToken.IsCancellationRequested)
+                {
+                    _screenMacroHandler.ExecuteCommand();
+                    await Task.Delay(100, stoppingToken);
+                }
+            }
+            catch (Exception e)
+            {
+                _screenMacroHandler.Dispose();
+                _logger.LogError(e, "Error in Worker");
+            }
         }
     }
     

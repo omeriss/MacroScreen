@@ -1,11 +1,8 @@
 import { useState } from "react";
 import popupStyles from "../../styles/popup.module.css";
 import Modal from "react-modal";
-import {
-  Button,
-  ButtonType,
-  DEFUALT_BUTTONS_VALUES,
-} from "../../interfaces/Buttons";
+import { ButtonType, DEFUALT_BUTTONS_VALUES } from "../../interfaces/Buttons";
+import useButtonControl from "../../hooks/buttonControl";
 
 export enum CreateType {
   FOLDER = "folder",
@@ -15,13 +12,13 @@ export enum CreateType {
 interface CreateButtonProps {
   children: React.ReactNode;
   type: CreateType;
-  addButton: (button: Button, key: string, modifyPath?: string[]) => void;
 }
 
-const CreateButton = ({ children, type, addButton }: CreateButtonProps) => {
+const CreateButton = ({ children, type }: CreateButtonProps) => {
   const [modalIsOpen, setIsOpen] = useState(false);
   const [buttonType, setButtonType] = useState<ButtonType>(ButtonType.Keyboard);
   const [name, setName] = useState("");
+  const { addButton } = useButtonControl();
 
   const handleAddButton = () => {
     const selectedType =

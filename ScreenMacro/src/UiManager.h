@@ -10,14 +10,24 @@
 #include "ui/screens/ButtonsScreen.h"
 #include "utils/UsbManager.h"
 #include "LittleFS.h"
+#include <ArduinoJson.h>
 
 class UiManager {
 public:
-    UiManager();
+    UiManager() {};
+
     void update();
+
     void setup();
-    void changeScreen(Screen* screen);
+
+    void changeScreen(Screen *screen);
+
+    ~UiManager();
+
 private:
-    Screen* _currentScreen;
+    Button *createButton(JsonObject buttonData, Screen* containingScreen);
+    ButtonsScreen *generateScreen(JsonVariant doc);
+
+    Screen *_currentScreen;
 };
 

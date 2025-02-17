@@ -14,7 +14,7 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       },
-      "commandLineArgs": "upload C:\\Users\\omer1\\Downloads\\test1"
+      "commandLineArgs": "upload C:\\Users\\omer1\\Downloads\\new3"
     }
   }
 }

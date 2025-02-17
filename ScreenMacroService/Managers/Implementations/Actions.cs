@@ -7,9 +7,10 @@ using Managers.Interfaces;
 
 namespace Managers.Implementations;
 
-public class Actions(IStatisticsHandler statisticsHandler) : IActions
+public class Actions(IStatisticsHandler statisticsHandler, IAudioHandler audioHandler) : IActions
 {
-    private IStatisticsHandler _statisticsHandler = statisticsHandler;
+    private readonly IStatisticsHandler _statisticsHandler = statisticsHandler;
+    private readonly IAudioHandler _audioHandler = audioHandler;
 
     [CommandHandler(CommandType.Log)]
     public void Log(Command command)
@@ -36,8 +37,27 @@ public class Actions(IStatisticsHandler statisticsHandler) : IActions
         _statisticsHandler.StopStatistics();
     }
     
+    [CommandHandler(CommandType.StartAudio)]
+    public void StartAudio(Command command)
+    {
+        _audioHandler.Start();
+    }
+    
+    [CommandHandler(CommandType.StopAudio)]
+    public void StopAudio(Command command)
+    {
+        _audioHandler.Stop();
+    }
+    
+    [CommandHandler(CommandType.AudioAction)]
+    public void AudioAction(Command command)
+    {
+        _audioHandler.AudioAction(command);
+    }
+    
     public void Dispose()
     {
         _statisticsHandler.Dispose();
+        _audioHandler.Dispose();
     }
 }

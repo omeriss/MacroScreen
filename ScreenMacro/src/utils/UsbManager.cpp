@@ -33,11 +33,10 @@ int UsbManager::readByteWithChecksum(uint8_t& checksum) {
     if (b == ESCAPE_BYTE) {
         b = timedRead();
         if (b == -1) return -1;
-        checksum ^= b;
         b ^= 0x20;
     }
-    else
-        checksum ^= b;
+
+    checksum ^= b;
 
     return b;
 }
@@ -85,14 +84,14 @@ Command UsbManager::readCommand() {
 }
 
 void writeByteWithChecksum(uint8_t b, uint8_t* buffer, uint8_t& checksum, size_t& index) {
+    checksum ^= b;
+
     if (b == START_BYTE || b == END_BYTE || b == ESCAPE_BYTE) {
         buffer[index++] = ESCAPE_BYTE;
         buffer[index++] = b ^ 0x20;
     } else {
         buffer[index++] = b;
     }
-
-    checksum ^= b;
 }
 
 void UsbManager::sendCommand(CommandType type, uint8_t* payload, size_t length){

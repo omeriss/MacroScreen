@@ -7,6 +7,8 @@ export enum ButtonType {
   Keyboard = "keyboard",
   Folder = "folder",
   App = "app",
+  AudioControl = "audio",
+  Gaming = "gaming",
 }
 
 export interface BaseButton {
@@ -57,6 +59,18 @@ export const DEFUALT_BUTTONS_VALUES: { [key in ButtonType]: Button } = {
     label: "New Button",
     background: 0x000000,
     path: "",
+  },
+  [ButtonType.AudioControl]: {
+    type: ButtonType.AudioControl,
+    index: 0,
+    label: "New Button",
+    background: 0x000000,
+  },
+  [ButtonType.Gaming]: {
+    type: ButtonType.Gaming,
+    index: 0,
+    label: "New Button",
+    background: 0x000000,
   },
 };
 

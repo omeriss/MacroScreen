@@ -33,7 +33,6 @@ public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguratio
         }
         catch (CommandReadException e)
         {
-            Console.WriteLine(e.Message);
         }
     }
     
@@ -60,16 +59,27 @@ public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguratio
     {
         var jsonPath = Path.Combine(config.UploadPath, _uploadSettings.JsonPath);
         var json = File.ReadAllText(jsonPath);
-        var code = Encoding.ASCII.GetBytes(json);
-
-        if (!_fileManager.UploadFile(_uploadSettings.JsonPath, code)) return false;
-        _fileManager.LogFile(_uploadSettings.JsonPath);
+        
+        var images = Directory.GetFiles(Path.Combine(config.UploadPath, _uploadSettings.ImagesPath));
+        var usedImages = images.Where(f => json.Contains($"\"label\":\"/{Path.GetFileName(f)}\""));
+        
+        if (!fileManager.RmDir(_uploadSettings.ImagesPath) || !_fileManager.MkDir(_uploadSettings.ImagesPath)) return false;
+        
+        foreach (var image in usedImages)
+        {
+            var imgData = File.ReadAllBytes(image);
+            if (!_fileManager.UploadFile($"{_uploadSettings.ImagesPath}/{Path.GetFileName(image)}", imgData)) return false;
+        }
+            
+        var jsonBytes = Encoding.UTF8.GetBytes(json);
+        if (!_fileManager.UploadFile(_uploadSettings.JsonPath, jsonBytes)) return false;
 
         return true;
     }
     
     public void Dispose()
     {
+        _actions.Dispose();
         _com.Dispose();
     }
 }

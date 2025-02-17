@@ -9,7 +9,7 @@ interface EditLabelProps {
 }
 
 const EditLabel = ({ value, setValue }: EditLabelProps) => {
-  const isImage = value.startsWith("\\");
+  const isImage = value.startsWith("/");
 
   return (
     <div className={styles.selectType}>
@@ -28,7 +28,7 @@ const EditLabel = ({ value, setValue }: EditLabelProps) => {
           value={!isImage ? value : ""}
           disabled={isImage}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-            !e.target.value.includes("\\") && setValue(e.target.value);
+            !e.target.value.includes("/") && setValue(e.target.value);
           }}
         />
       </div>

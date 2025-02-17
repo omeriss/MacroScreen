@@ -8,10 +8,16 @@ public enum CommandType
     StartWriteFile,
     SendFilePart,
     Ls,
+    MkDir,
+    RmDir,
     LogFile,
     OpenProgram,
     StartStatistics,
     StopStatistics,
     SendStatistics,
-    Boot
+    StartAudio,
+    StopAudio,
+    SendAudio,
+    AudioAction,
+    Boot,
 }

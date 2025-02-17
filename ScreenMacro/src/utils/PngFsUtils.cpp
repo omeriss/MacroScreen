@@ -30,11 +30,11 @@ int32_t PngUtils::pngSeek(PNGFILE *page, int32_t position) {
 void PngUtils::pngDraw(PNGDRAW *pDraw) {
     uint16_t lineBuffer[MAX_IMAGE_WIDTH];
     uint8_t maskBuffer[1 + MAX_IMAGE_WIDTH / 8];
-    png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, 0xffffffff);
-    Pos *pos = (Pos *) pDraw->pUser;
+    auto *drawData = (ImgDrawData *) pDraw->pUser;
+    png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, drawData->backgroundColor);
 
     if (png.getAlphaMask(pDraw, maskBuffer, 255)) {
         // Note: pushMaskedImage is for pushing to the TFT and will not work pushing into a sprite
-        ScreenManager::getInstance().tft.pushMaskedImage(pos->x, pos->y + pDraw->y, pDraw->iWidth, 1, lineBuffer, maskBuffer);
+        ScreenManager::getInstance().tft.pushMaskedImage(drawData->x, drawData->y + pDraw->y, pDraw->iWidth, 1, lineBuffer, maskBuffer);
     }
 }

@@ -9,19 +9,19 @@
 
 class StatClock {
 public:
-    StatClock(int min, int max, char* unit, char* label, int x, int y, int r, u_int32_t color);
+    StatClock(int min, int max, const char* unit, const char* label, int x, int y, int r, u_int32_t color);
     void draw();
     void update(int value);
     int getValue();
 private:
-    int calcAngle(int value);
-    void drawText(uint32_t textColor);
+    int calcAngle(int value) const;
+    void drawText(uint32_t textColor) const;
 
     int _min_value;
     int _max_value;
     int _value;
-    char* _unit;
-    char* _label;
+    const char* _unit;
+    const char* _label;
     int _x;
     int _y;
     int _r;

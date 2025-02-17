@@ -9,4 +9,6 @@ public interface IActions : IDisposable
     public void OpenProgram(Command command);
     public void StartStatistics(Command command);
     public void StopStatistics(Command command);
+    public void StartAudio(Command command);
+    public void StopAudio(Command command);
 }

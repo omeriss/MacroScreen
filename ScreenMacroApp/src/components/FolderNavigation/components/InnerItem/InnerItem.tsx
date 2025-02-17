@@ -16,12 +16,12 @@ import {
 import FolderNavigationItem from "../FolderNavigationItem/FolderNavigationItem";
 import { useRecoilState } from "recoil";
 import { pathState } from "../../../../store/store";
+import ContextMenu from "../../../ContextMenu/ContextMenu";
+import useButtonControl from "../../../../hooks/buttonControl";
 
 interface InnerItemProps {
   keyString: string;
   path: string[];
-  addButton: (button: Button, key: string, modifyPath?: string[]) => void;
-  removeButton: (key: string, modifyPath?: string[]) => void;
 }
 
 const isSelected = (path: string[], keyString: string, currentPath: string[]) =>
@@ -31,10 +31,9 @@ export const InnerItem = ({
   keyString,
   button,
   path,
-  addButton,
-  removeButton,
 }: InnerItemProps & { button: Button }) => {
   const [currentPath, setCurrentPath] = useRecoilState(pathState);
+  const { removeButton } = useButtonControl();
 
   const padding = (INIT_TAB + path.length) * PADDING;
 
@@ -53,15 +52,22 @@ export const InnerItem = ({
         className={`${styles.item} ${
           isSelected(path, keyString, currentPath) ? styles.selected : ""
         }`}
-        style={{ paddingLeft: padding }}
         onClick={() => setCurrentPath([...path, keyString])}
         draggable
         onDragStart={handleDragStart}
       >
-        <div>
+        <ContextMenu
+          style={{ paddingLeft: padding }}
+          options={[
+            {
+              label: "Delete",
+              onClick: () => removeButton(keyString, path),
+            },
+          ]}
+        >
           {(ICONS[button.type] ?? MdDescription)({})}
           {keyString}
-        </div>
+        </ContextMenu>
       </div>
     </>
   );
@@ -71,11 +77,10 @@ export const InnerFolderItem = ({
   keyString,
   button,
   path,
-  addButton,
-  removeButton,
 }: InnerItemProps & { button: FolderButton }) => {
   const [currentPath, setCurrentPath] = useRecoilState(pathState);
   const [open, setOpen] = useState(false);
+  const { removeButton, addButton } = useButtonControl();
 
   const padding = (INIT_TAB + path.length) * PADDING - FOLDER_PADDING_DEC;
 
@@ -89,8 +94,6 @@ export const InnerFolderItem = ({
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
-    (e.currentTarget as HTMLElement).style.boxShadow = "none";
-
     const data = e.dataTransfer.getData("application/json");
     const draggedItem = JSON.parse(data);
 
@@ -108,32 +111,6 @@ export const InnerFolderItem = ({
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
-
-    const data = e.dataTransfer.getData("application/json");
-    const draggedItem = JSON.parse(data);
-
-    if (
-      `${path.join("/")}${keyString}`.startsWith(
-        `${draggedItem.path.join("/")}${draggedItem.keyString}`
-      )
-    ) {
-      e.dataTransfer.dropEffect = "none";
-      return;
-    }
-    e.dataTransfer.dropEffect = "move";
-
-    const targetRect = e.currentTarget.getBoundingClientRect();
-    const dropPosition =
-      e.clientY - targetRect.top < targetRect.height / 2 ? "top" : "bottom";
-
-    (e.currentTarget as HTMLElement).style.boxShadow =
-      dropPosition === "top"
-        ? "0 1px 0 0 black inset, 0 -1px 0 0 black"
-        : "0 -1px 0 0 black inset, 0 1px 0 0 black";
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    (e.currentTarget as HTMLElement).style.boxShadow = "none";
   };
 
   return (
@@ -149,7 +126,6 @@ export const InnerFolderItem = ({
         onDragStart={handleDragStart}
         onDrop={handleDrop}
         onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
       >
         <div>
           <MdChevronRight
@@ -167,8 +143,6 @@ export const InnerFolderItem = ({
         <FolderNavigationItem
           folders={button.folder}
           path={[...path, keyString]}
-          addButton={addButton}
-          removeButton={removeButton}
         />
       )}
     </>

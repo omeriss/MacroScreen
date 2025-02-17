@@ -1,16 +1,16 @@
 #include "StatClock.h"
 
 
-StatClock::StatClock(int min, int max, char *unit, char *label, int x, int y, int r, uint32_t color) :
+StatClock::StatClock(int min, int max, const char *unit, const char *label, int x, int y, int r, uint32_t color) :
 _min_value(min), _max_value(max), _unit(unit), _label(label), _x(x), _y(y), _r(r), _color(color) {
     _value = min;
 }
 
-int StatClock::calcAngle(int value) {
+int StatClock::calcAngle(int value) const {
     return map(value, _min_value, _max_value, ANGLE_GAP, 360 - ANGLE_GAP);
 }
 
-void StatClock::drawText(uint32_t textColor) {
+void StatClock::drawText(uint32_t textColor) const {
     auto &screenManager = ScreenManager::getInstance();
 
     screenManager.tft.setTextColor(textColor, TFT_BLACK);

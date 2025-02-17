@@ -19,6 +19,7 @@ public class ComHandler(IConfiguration configuration) : IComHandler
 {
     private SerialPort? _serialPort = null;
     private readonly ComSettings _comSettings = configuration.GetSection("Com").Get<ComSettings>()!;
+    public object ReadLock { get; } = new object();
     
     const int StartByte = 0x7E;
     const int EndByte = 0x7F;
@@ -51,57 +52,81 @@ public class ComHandler(IConfiguration configuration) : IComHandler
         if (b == EscapeByte)
         {
             b = _serialPort.ReadByte();
-            checksum ^= b;
             b ^= 0x20;
         }
-        else
-            checksum ^= b;
+        
+        checksum ^= b;
         
         return b;
     }
-
-    public Command GetCommand()
+    
+    private int ReadWithTimeout(int? timeout)
     {
-        if (_serialPort is null) throw new SerialPortException("Serial port not open");
+        if (timeout is null)
+            return _serialPort!.ReadByte();
+        
+        int lastTimeout = _serialPort!.ReadTimeout;
+        _serialPort.ReadTimeout = 0;
 
         try
         {
-            while (_serialPort.ReadByte() != StartByte)
-            {
-            }
-
-            int checksum = 0;
-
-            int typeData = ReadByteCheckSum(ref checksum);
-            
-            if (!Enum.IsDefined(typeof(CommandType), typeData)) throw new CommandReadException("Invalid command type");
-            
-            int length = ReadByteCheckSum(ref checksum) << 8 | ReadByteCheckSum(ref checksum);
-
-            List<byte> payload = new(length);
-
-            for (int i = 0; i < length; i++)
-            {
-                int b = ReadByteCheckSum(ref checksum);
-                payload.Add((byte)b);
-            }
-
-            int receivedChecksum = ReadByteCheckSum(ref checksum);
-
-            if (checksum != 0) throw new CommandReadException("Checksum mismatch");
-
-            if (_serialPort.ReadByte() != EndByte) throw new CommandReadException("End byte mismatch");
-
-            return new Command((CommandType)typeData, payload);
+            int b = _serialPort.ReadByte();
+            return b;
         }
-        catch (TimeoutException)
+        finally
         {
-            throw new CommandReadException("Timeout");
+            _serialPort.ReadTimeout = lastTimeout;
+        }
+    }
+
+    public Command GetCommand(int? startTimeout = null)
+    {
+        lock (ReadLock)
+        {
+            if (_serialPort is null) throw new SerialPortException("Serial port not open");
+
+            try
+            {
+                while (ReadWithTimeout(startTimeout) != StartByte)
+                {
+                }
+
+                int checksum = 0;
+
+                int typeData = ReadByteCheckSum(ref checksum);
+
+                if (!Enum.IsDefined(typeof(CommandType), typeData))
+                    throw new CommandReadException("Invalid command type");
+
+                int length = ReadByteCheckSum(ref checksum) << 8 | ReadByteCheckSum(ref checksum);
+
+                List<byte> payload = new(length);
+
+                for (int i = 0; i < length; i++)
+                {
+                    int b = ReadByteCheckSum(ref checksum);
+                    payload.Add((byte)b);
+                }
+
+                int receivedChecksum = ReadByteCheckSum(ref checksum);
+
+                if (checksum != 0) throw new CommandReadException("Checksum mismatch");
+
+                if (_serialPort.ReadByte() != EndByte) throw new CommandReadException("End byte mismatch");
+
+                return new Command((CommandType)typeData, payload);
+            }
+            catch (TimeoutException)
+            {
+                throw new CommandReadException("Timeout");
+            }
         }
     }
     
     public void AddByteCheckSum(List<byte> bytes, int b, ref int checksum)
     {
+        checksum ^= b;
+
         if (b is StartByte or EndByte or EscapeByte)
         {
             bytes.Add(EscapeByte);
@@ -109,7 +134,6 @@ public class ComHandler(IConfiguration configuration) : IComHandler
         }
 
         bytes.Add((byte)b);
-        checksum ^= b;
     }
 
     public void SendCommand(Command command)
@@ -129,16 +153,14 @@ public class ComHandler(IConfiguration configuration) : IComHandler
             AddByteCheckSum(bytes, b, ref checksum);
         }
 
-        bytes.Add((byte)checksum);
+        AddByteCheckSum(bytes, checksum, ref checksum);
         bytes.Add(EndByte);
         
         _serialPort.Write(bytes.ToArray(), 0, bytes.Count);
     }
 
-    public bool WaitForAck(int id)
+    public bool WaitForAck<T>(T id) where T : IEquatable<T>
     {
-        if (_serialPort is null) throw new SerialPortException("Serial port not open");
-
         Stopwatch stopwatch = new();
         stopwatch.Start();
 
@@ -147,7 +169,7 @@ public class ComHandler(IConfiguration configuration) : IComHandler
             try
             {
                 var command = GetCommand();
-                if (command.Type == CommandType.Acknowledge && id == command.Read<short>())
+                if (command.Type == CommandType.Acknowledge && id.Equals(command.Read<T>()))
                     return true;
                 if (command.Type == CommandType.Log)
                     Console.WriteLine(Encoding.UTF8.GetString(command.Payload));

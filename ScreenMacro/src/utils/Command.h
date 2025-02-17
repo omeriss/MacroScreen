@@ -12,12 +12,18 @@ enum class CommandType : uint8_t {
     StartWriteFile,
     SendFilePart,
     Ls,
+    MkDir,
+    RmDir,
     LogFile,
     OpenProgram,
     StartStatistics,
     StopStatistics,
     SendStatistics,
-    Boot
+    StartAudio,
+    StopAudio,
+    SendAudio,
+    AudioAction,
+    Boot,
 };
 
 
@@ -72,9 +78,13 @@ public:
         return *this;
     }
 
-    Command& readString(char* str) {
+    Command& readString(char* str, uint16_t max = 0) {
         uint16_t len;
         (*this) >> len;
+
+        if (max && len >= max)
+            len = max - 1;
+
         std::memcpy(str, payload + _pos, len);
         str[len] = '\0';
         _pos += len;

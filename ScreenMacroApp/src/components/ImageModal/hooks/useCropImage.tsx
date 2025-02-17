@@ -94,7 +94,7 @@ const useCropImage = (
       const uint8Array = new Uint8Array(arrayBuffer);
       await writeFile(path, uint8Array);
 
-      await setLabel(`\\${name}`);
+      await setLabel(`/${name}`);
     }, "image/png");
   };
 

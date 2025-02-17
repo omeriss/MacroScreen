@@ -6,7 +6,7 @@
 // create enum screentype
 enum ScreenType {
     NONE,
-    SPOTIFY,
+    AUDIO,
     GAMING
 };
 

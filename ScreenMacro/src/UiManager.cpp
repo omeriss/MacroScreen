@@ -1,6 +1,11 @@
 #include "UiManager.h"
 #include "ui/screens/GamingScreen.h"
 
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "misc-no-recursion"
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "MemoryLeak"
+
 void UiManager::update() {
     ScreenManager::getInstance().updateTouch();
     _currentScreen->update();
@@ -25,6 +30,15 @@ void UiManager::update() {
                 }
                 else {
                     UsbManager::getInstance().sendCommand(CommandType::StopStatistics, nullptr, 0);
+                }
+                break;
+            case CommandType::SendAudio:
+                if (_currentScreen->getType() == AUDIO) {
+                    auto* music = static_cast<MusicScreen*>(_currentScreen);
+                    music->setAudio(command);
+                }
+                else{
+                    UsbManager::getInstance().sendCommand(CommandType::StopAudio, nullptr, 0);
                 }
                 break;
             case CommandType::Ls: {
@@ -64,6 +78,7 @@ void UiManager::update() {
                 uint16_t i = 0;
                 UsbManager::getInstance().sendCommand(CommandType::Acknowledge, (uint8_t*)&i, sizeof(i));
 
+                // TODO: timeout and retry
                 for (i++; i <= parts; i++) {
                     auto part = UsbManager::getInstance().readCommand();
                     if (part.type != CommandType::SendFilePart) {
@@ -77,6 +92,36 @@ void UiManager::update() {
                 }
 
                 file.close();
+                break;
+            }
+            case CommandType::MkDir:
+            {
+                command.readString(path);
+
+                if (!LittleFS.mkdir(path)) {
+                    UsbManager::getInstance().sendLog("Failed to create directory");
+                }
+
+                Command cmd(CommandType::Acknowledge);
+                cmd.writeString(path);
+                UsbManager::getInstance().sendCommand(cmd);
+
+                break;
+            }
+            case CommandType::RmDir:
+            {
+                command.readString(path);
+
+                // todo, remove all the files in the dir first
+
+                if (!LittleFS.rmdir(path)) {
+                    UsbManager::getInstance().sendLog("Failed to remove directory");
+                }
+
+                Command cmd(CommandType::Acknowledge);
+                cmd.writeString(path);
+                UsbManager::getInstance().sendCommand(cmd);
+
                 break;
             }
             case CommandType::LogFile:
@@ -105,90 +150,99 @@ void UiManager::update() {
     }
 }
 
-Button* createButton (char* label, int16_t color, int index) {
+Button* UiManager::createButton(JsonObject buttonData, Screen* containingScreen) {
+    if (buttonData[BUTTON_TYPE].isNull())
+        return nullptr;
+
+    std::string label = buttonData[BUTTON_LABEL];
+    int index = buttonData[BUTTON_INDEX];
+    int backgroundColor = buttonData[BUTTON_BACKGROUND];
+    uint16_t background = (((backgroundColor >> 16) & 0xF8) << 8) | (((backgroundColor >> 8) & 0xFC) << 3) | ((backgroundColor & 0xFF) >> 3);
+
+    if (label.length() && label[0] == '/') {
+        label = IMAGE_PATH + label;
+    }
+
     int row = index / BUTTON_ROWS;
     int col = index % BUTTON_COLS;
 
-    return new Button(label, BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
-                      BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, color);
+    if (strcmp(buttonData[BUTTON_TYPE], FOLDER_TYPE) == 0) {
+        auto screen = generateScreen(buttonData[BUTTON_FOLDER]);
+
+        return new ActionButton([this, screen]() {
+                                    this->changeScreen(screen);
+                                }, label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
+                                BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
+    }
+    if (strcmp(buttonData[BUTTON_TYPE], AUDIO_TYPE) == 0) {
+        auto screen = new MusicScreen( [this, containingScreen]() {
+            this->changeScreen(containingScreen);
+        });
+
+        return new ActionButton([this, screen]() {
+                                    this->changeScreen(screen);
+                                }, label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
+                                BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
+    }
+    if (strcmp(buttonData[BUTTON_TYPE], GAMING_TYPE) == 0) {
+        auto screen = new GamingScreen( [this, containingScreen]() {
+            this->changeScreen(containingScreen);
+        });
+
+        return new ActionButton([this, screen]() {
+                                    this->changeScreen(screen);
+                                }, label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
+                                BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
+    }
+
+    return new Button(label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
+                      BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
 }
 
-ActionButton* createActionButton (std::function<void()> action, char* label, int16_t color, int index) {
-    int row = index / BUTTON_ROWS;
-    int col = index % BUTTON_COLS;
+ButtonsScreen* UiManager::generateScreen(JsonVariant doc) {
+    if (!doc.is<JsonObject>())
+        return new ButtonsScreen();
 
-    return new ActionButton(action, label, BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
-                            BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, color);
-}
+    JsonVariant buttonsObject = doc[FOLDER_BUTTONS];
 
-KeyboardButton* createKeyboardButton (uint8_t key, char* label, int16_t color, int index, bool isConsumerControl) {
-    int row = index / BUTTON_ROWS;
-    int col = index % BUTTON_COLS;
+    if (!buttonsObject.is<JsonObject>())
+        return new ButtonsScreen(new std::vector<Button*>());
 
-    return new KeyboardButton(key, isConsumerControl, label, BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
-                              BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, color);
-}
+    auto* screen = new ButtonsScreen();
+    auto* buttons = new std::vector<Button*>();
 
-AppButton* createAppButton (char* path, char* label, int16_t color, int index) {
-    int row = index / BUTTON_ROWS;
-    int col = index % BUTTON_COLS;
+    for (auto pair : buttonsObject.as<JsonObject>()){
+        buttons->push_back(createButton(pair.value().as<JsonObject>(), screen));
+    }
 
-    return new AppButton(path, label, BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
-                         BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, color);
-}
+    screen->setButtons(buttons);
 
-
-
-UiManager::UiManager() {
-    // define subscreen
-
-    auto *subScreen = new ButtonsScreen();
-    auto *cur = new ButtonsScreen();
-    auto *spotify = new MusicScreen([this, cur]() { this->changeScreen(cur); });
-    auto *gaming = new GamingScreen([this, cur]() { this->changeScreen(cur); });
-
-    auto *subButtons = new std::vector<Button *>();
-    subButtons->push_back(createActionButton([this, cur]() { this->changeScreen(cur); }, "<-", TFT_BLUE, 0));
-    subButtons->push_back(createActionButton([this, cur]() {
-        REG_WRITE(RTC_CNTL_OPTION1_REG, RTC_CNTL_FORCE_DOWNLOAD_BOOT);
-        esp_restart();
-    }, "BOOT", TFT_BLUE, 1));
-    subButtons->push_back(createActionButton([this, cur]() {
-        esp_restart();
-    }, "Restart", TFT_BLUE, 2));
-    subButtons->push_back(createActionButton([this, cur]() {
-        ScreenManager::getInstance().turnOffBacklight();
-    }, "LOW", TFT_BLUE, 3));
-    subButtons->push_back(createActionButton([this, cur]() {
-        ScreenManager::getInstance().turnOnBacklight();
-    }, "HIGH", TFT_BLUE, 4));
-    subButtons->push_back(createActionButton([this, cur]() {
-        ScreenManager::getInstance().sleep();
-    }, "SLEEP", TFT_BLUE, 5));
-    subButtons->push_back(createButton("C3", TFT_BLUE, 6));
-    subButtons->push_back(createButton("C1", TFT_BLUE, 7));
-    subButtons->push_back(createActionButton([this, gaming]() { this->changeScreen(gaming); }, "game", TFT_BLACK, 8));
-
-    auto buttons = new std::vector<Button *>();
-    buttons->push_back(createActionButton([this, subScreen]() { this->changeScreen(subScreen); }, "DEBUG", TFT_BLUE, 0));
-    buttons->push_back(createKeyboardButton('1', "1", TFT_BLUE, 1, false));
-    buttons->push_back(createKeyboardButton(HID_USAGE_CONSUMER_PLAY_PAUSE, "play-pause", TFT_BLUE, 2, true));
-    buttons->push_back(
-            createActionButton([this, spotify]() { this->changeScreen(spotify); }, "/spotify.png", TFT_BLACK, 3));
-    buttons->push_back(
-            createAppButton("C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe", "/chrome.png", TFT_BLUE,
-                          4));
-    buttons->push_back(createButton("test", TFT_BLUE, 5));
-    buttons->push_back(createButton("/explorer.png", TFT_BLUE, 6));
-    buttons->push_back(createButton("something", TFT_BLUE, 7));
-    buttons->push_back(createActionButton([this, gaming]() { this->changeScreen(gaming); }, "game", TFT_BLACK, 8));
-
-    cur->setButtons(buttons);
-    subScreen->setButtons(subButtons);
-    _currentScreen = cur;
+    return screen;
 }
 
 void UiManager::setup() {
+    fs::File file = LittleFS.open(JSON_PATH, "r");
+
+    if (!file) {
+        _currentScreen = new ButtonsScreen(new std::vector<Button*>());
+        return;
+    }
+
+    // make a buffer in the file size
+    char buffer[file.size() + 1];
+    file.readBytes(buffer, file.size());
+    buffer[file.size()] = '\0';
+    file.close();
+
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, buffer);
+
+    if (error) {
+        _currentScreen = new ButtonsScreen(new std::vector<Button*>());
+        return;
+    }
+
+    _currentScreen = generateScreen(doc);
     ScreenManager::getInstance().setup();
     _currentScreen->draw();
 }
@@ -197,3 +251,9 @@ void UiManager::changeScreen(Screen *screen) {
     _currentScreen = screen;
     _currentScreen->draw();
 }
+
+UiManager::~UiManager() {
+}
+
+#pragma clang diagnostic pop
+#pragma clang diagnostic pop

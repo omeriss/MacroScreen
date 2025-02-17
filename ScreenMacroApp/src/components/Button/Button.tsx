@@ -8,22 +8,32 @@ import {
   BORDER_RADIUS_PERCENTAGE,
   TEXT_HIGHT_PERCENTAGE,
 } from "./Button.config";
-import { useRecoilValue } from "recoil";
-import { savePathState } from "../../store/store";
+import { useRecoilState, useRecoilValue } from "recoil";
+import { savePathState, pathState } from "../../store/store";
 import { IMAGES_FOLDER_NAME } from "../../config/projectfolder.config";
+import useButtonControl from "../../hooks/buttonControl";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface ButtonProps {
   background?: number;
   label?: string;
   disabled?: boolean;
+  buttonKey: string;
 }
 
-const Button = ({ background, label, disabled }: ButtonProps) => {
+const Button = ({ background, label, disabled, buttonKey }: ButtonProps) => {
   const [imagePath, setImagePath] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef: React.MutableRefObject<HTMLDivElement | null> =
+    useRef(null);
   const [fontSize, setFontSize] = useState(0);
   const [borderRadius, setBorderRadius] = useState(0);
+  const [currentPath, setCurrentPath] = useRecoilState(pathState);
   const savePath = useRecoilValue(savePathState);
+  const [isHidden, setIsHidden] = useState(false);
+
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: buttonKey });
 
   const backgroundColor = useMemo(
     () => `#${(background ?? 0)?.toString(16).padStart(6, "0")}`,
@@ -31,7 +41,7 @@ const Button = ({ background, label, disabled }: ButtonProps) => {
   );
 
   const updatePaths = async () => {
-    if (!savePath || !label || !label.startsWith("\\")) {
+    if (!savePath || !label || !label.startsWith("/")) {
       setImagePath(null);
       return;
     }
@@ -40,7 +50,7 @@ const Button = ({ background, label, disabled }: ButtonProps) => {
     setImagePath(convertFileSrc(path));
   };
 
-  const isImage = label?.startsWith("\\");
+  const isImage = label?.startsWith("/");
 
   useEffect(() => {
     const resizeText = () => {
@@ -73,13 +83,30 @@ const Button = ({ background, label, disabled }: ButtonProps) => {
   return (
     <div
       className={`${styles.button} ${disabled ? styles.disabled : ""}`}
+      {...attributes}
+      {...listeners}
+      onPointerDown={(event) => {
+        if (!buttonKey) return;
+
+        const newPath = [...currentPath];
+        if (newPath.length > 0) newPath.pop();
+        setCurrentPath([...newPath, buttonKey]);
+
+        if (listeners?.onPointerDown) listeners.onPointerDown(event);
+      }}
       style={{
         backgroundColor: backgroundColor,
         fontSize: fontSize,
         borderRadius: borderRadius,
         border: borderRadius ? undefined : "none",
+        transition,
+        transform: CSS.Transform.toString(transform),
       }}
-      ref={containerRef}
+      ref={(node) => {
+        if (!node) return;
+        containerRef.current = node;
+        setNodeRef(node);
+      }}
     >
       {isImage ? (
         <img src={imagePath ?? ""} alt="image" className={styles.img} />

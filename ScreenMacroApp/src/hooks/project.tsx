@@ -130,7 +130,15 @@ const useProject = () => {
     }
   };
 
-  return { save, openProject, createProject, tryOpenLastProject };
+  return {
+    save,
+    openProject,
+    createProject,
+    tryOpenLastProject,
+    savePath,
+    currentPath,
+    rootScreen,
+  };
 };
 
 export default useProject;

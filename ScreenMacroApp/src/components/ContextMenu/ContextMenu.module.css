@@ -1,0 +1,35 @@
+.menu {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  background: var(--primery-color-dark);
+  padding: 5px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 2px;
+  box-shadow: 3px 3px 3px 3px rgba(22, 22, 22, 0.673);
+  list-style-type: none;
+  border-radius: 5px;
+  border: 0.5px solid white;
+  z-index: 1000;
+
+  li {
+    background: transparent;
+    text-align: left;
+    border: none;
+    border-radius: 4px;
+    padding-left: 20px;
+    color: var(--nav-text-color);
+    min-height: 30px;
+  }
+
+  li:hover {
+    background: var(--highlight-color);
+  }
+}
+
+.container {
+  position: relative;
+  width: 100%;
+}

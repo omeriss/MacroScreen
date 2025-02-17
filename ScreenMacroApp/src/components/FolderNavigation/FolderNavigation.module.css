@@ -1,15 +1,20 @@
 .toolbar {
   width: 250px;
-  /* resize: horizontal; */
   overflow: hidden;
   position: relative;
+}
+
+.toolbar .toolbar-section-main {
+  max-height: 20%;
+  display: none !important;
+  overflow-y: scroll;
 }
 
 .resizeHandle {
   position: absolute;
   top: 0;
   right: 0;
-  width: 10px; /* Width of the resizable handle */
+  width: 10px;
   height: 100%;
   cursor: ew-resize; /* Cursor for horizontal resizing */
   background-color: transparent; /* Make the handle invisible */

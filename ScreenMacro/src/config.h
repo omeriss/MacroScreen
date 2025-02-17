@@ -18,6 +18,23 @@
 #define BUTTON_ROWS 3
 #define BUTTON_COLS 3
 
+#define JSON_PATH "/screen.json"
+#define IMAGE_PATH "/images"
+
+// json analyze
+#define BUTTON_TYPE "type"
+#define BUTTON_LABEL "label"
+#define BUTTON_PATH "path"
+#define BUTTON_INDEX "index"
+#define BUTTON_BACKGROUND "background"
+#define BUTTON_FOLDER "folder"
+
+#define FOLDER_BUTTONS "buttons"
+
+#define FOLDER_TYPE "folder"
+#define GAMING_TYPE "gaming"
+#define AUDIO_TYPE "audio"
+
 // font config
 #define FONT &FreeSansOblique12pt7b
 #define FONT_BOLD &FreeSansBold12pt7b
@@ -37,3 +54,4 @@
 #define USB_MANUFACTURER "Omeriss"
 #define USB_PRODUCT "ScreenMacro"
 #define TIMED_READ_TIMEOUT 100
+

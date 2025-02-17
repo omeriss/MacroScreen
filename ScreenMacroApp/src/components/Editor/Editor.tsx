@@ -1,18 +1,17 @@
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import FolderScreen from "../../interfaces/FolderScreen";
 import { pathState, rootScreenState } from "../../store/store";
 import styles from "./Editor.module.css";
 import { useMemo } from "react";
 import { Button, EDIT_COMPONENT, FolderButton } from "../../interfaces/Buttons";
+import useButtonControl from "../../hooks/buttonControl";
 
-interface EditorProps {
-  editButton: (newButton: Button, modifyPath?: string[]) => void;
-}
+interface EditorProps {}
 
-const Editor = ({ editButton }: EditorProps) => {
-  const [path, setPath] = useRecoilState<string[]>(pathState);
-  const [rootScreen, setRootScreen] =
-    useRecoilState<FolderScreen>(rootScreenState);
+const Editor = ({}: EditorProps) => {
+  const path = useRecoilValue<string[]>(pathState);
+  const rootScreen = useRecoilValue<FolderScreen>(rootScreenState);
+  const { editButton } = useButtonControl();
 
   const [currentKey, currentButton] = useMemo(() => {
     const folder = path.reduce(

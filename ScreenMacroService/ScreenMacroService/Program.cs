@@ -2,6 +2,7 @@ using Common.Models.Settings;
 using Managers;
 using ScreenMacroService;
 
+
 var builder = Host.CreateApplicationBuilder(args);
 
 builder.Services.AddManagers();
@@ -19,12 +20,15 @@ if (args.Length > 0 && args[0] == uploadCommand)
     }
     
     builder.Services.AddSingleton(new UploadConfig() { UploadPath = path });
-    builder.Services.AddHostedService<Uploader>();
+    builder.Services.AddSingleton<Uploader>();
+    
+    var uploader = builder.Services.BuildServiceProvider().GetRequiredService<Uploader>();
+    uploader.Execute();
 }
 else
 {
     builder.Services.AddHostedService<Worker>();
+    
+    var host = builder.Build();
+    host.Run();
 }
-
-var host = builder.Build();
-host.Run();

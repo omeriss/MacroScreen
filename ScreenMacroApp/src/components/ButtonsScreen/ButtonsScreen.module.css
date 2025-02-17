@@ -13,8 +13,37 @@
 
   background-color: black;
 
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, 29%);
+  grid-template-rows: repeat(3, 25%);
   justify-content: space-evenly;
   align-content: space-evenly;
+}
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+
+  button {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--nav-text-color);
+    color: var(--nav-text-color);
+    background-color: transparent;
+    font-size: 1rem;
+    cursor: pointer;
+    margin: 5px;
+  }
+
+  button:hover {
+    background-color: var(--highlight-color);
+  }
+
+  span {
+    font-size: 1.5rem;
+  }
 }
