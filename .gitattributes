@@ -1,2 +1,3 @@
 *.h linguist-language=C++
+*.ts linguist-detectable=false
 *.css linguist-detectable=false
