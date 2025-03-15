@@ -6,12 +6,22 @@
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "MemoryLeak"
 
+UiManager::UiManager() {
+    _lastUpdate = millis();
+}
+
 void UiManager::update() {
     ScreenManager::getInstance().updateTouch();
     _currentScreen->update();
 
     static char path[128];
     auto command = UsbManager::getInstance().readCommand();
+
+    if (command.type != CommandType::NoData || ScreenManager::getInstance().isPressed())
+        _lastUpdate = millis();
+
+    if (millis() - _lastUpdate > MILS_TO_SLEEP)
+        ScreenManager::getInstance().sleep();
 
     if(command.type != CommandType::NoData){
         switch (command.type) {
@@ -163,11 +173,15 @@ Button* UiManager::createButton(JsonObject buttonData, Screen* containingScreen)
         label = IMAGE_PATH + label;
     }
 
-    int row = index / BUTTON_ROWS;
-    int col = index % BUTTON_COLS;
+    int row = (index % BUTTONS_PER_SCREEN) / BUTTON_ROWS;
+    int col = (index % BUTTONS_PER_SCREEN) % BUTTON_COLS;
 
     if (strcmp(buttonData[BUTTON_TYPE], FOLDER_TYPE) == 0) {
         auto screen = generateScreen(buttonData[BUTTON_FOLDER]);
+        screen->setExit([this, containingScreen]() {
+            this->changeScreen(containingScreen);
+        });
+
 
         return new ActionButton([this, screen]() {
                                     this->changeScreen(screen);
@@ -194,6 +208,32 @@ Button* UiManager::createButton(JsonObject buttonData, Screen* containingScreen)
                                 }, label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
                                 BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
     }
+    if (strcmp(buttonData[BUTTON_TYPE], APP_TYPE) == 0) {
+        const char* app = buttonData[BUTTON_APP];
+        return new CommandButton(CommandType::OpenProgram, (const uint8_t*)app, strlen(app), label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
+                                BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
+    }
+    if (strcmp(buttonData[BUTTON_TYPE], SCRIPT_TYPE) == 0) {
+        const char* script = buttonData[BUTTON_SCRIPT];
+        return new CommandButton(CommandType::RunScript, (const uint8_t*)script, strlen(script), label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
+                                 BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
+    }
+    if (strcmp(buttonData[BUTTON_TYPE], KEYBOARD_TYPE) == 0) {
+        JsonVariant keys = buttonData[BUTTON_PRESS];
+
+        if (!keys.is<JsonArray>())
+            return nullptr;
+
+        uint8_t* keyArray = new uint8_t[keys.size()];
+        int i = 0;
+        for (auto key : keys.as<JsonArray>()){
+            keyArray[i++] = key;
+        }
+
+        return new KeyboardButton(keyArray, keys.size(), label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
+                                  BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
+    }
+
 
     return new Button(label.c_str(), BUTTON_START_X + col * (BUTTON_W + BUTTON_SPACING_X) - BUTTON_W / 2,
                       BUTTON_START_Y + row * (BUTTON_H + BUTTON_SPACING_Y) - BUTTON_H / 2, BUTTON_W, BUTTON_H, background);
@@ -209,12 +249,23 @@ ButtonsScreen* UiManager::generateScreen(JsonVariant doc) {
         return new ButtonsScreen(new std::vector<Button*>());
 
     auto* screen = new ButtonsScreen();
-    auto* buttons = new std::vector<Button*>();
+    std::vector<std::tuple<int, Button*>> buttonsWithIndex;
 
     for (auto pair : buttonsObject.as<JsonObject>()){
-        buttons->push_back(createButton(pair.value().as<JsonObject>(), screen));
+        auto button = pair.value().as<JsonObject>();
+        int index = button[BUTTON_INDEX];
+        buttonsWithIndex.push_back({index,createButton(pair.value().as<JsonObject>(), screen)});
     }
 
+    std::sort(buttonsWithIndex.begin(), buttonsWithIndex.end(), [](const std::tuple<int, Button*>& a, const std::tuple<int, Button*>& b) {
+        return std::get<0>(a) < std::get<0>(b);
+    });
+
+    auto* buttons = new std::vector<Button*>();
+
+    for(auto& button : buttonsWithIndex){
+        buttons->push_back(std::get<1>(button));
+    }
     screen->setButtons(buttons);
 
     return screen;

@@ -58,8 +58,10 @@ const ButtonsScreen = ({ folderScreen }: ButtonsScreenProps) => {
   const sensors = useSensors(useSensor(PointerSensor));
 
   const pages = Math.floor(
-    Object.entries(folderScreen.buttons).length / ButtonsInScreen
+    (Object.entries(folderScreen.buttons).length - 1) / ButtonsInScreen
   );
+
+  console.log(pages, page);
 
   const handleDragEnd = (event: DragEndEvent) => {
     setDraggingId(null);

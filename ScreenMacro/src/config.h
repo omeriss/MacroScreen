@@ -17,6 +17,7 @@
 
 #define BUTTON_ROWS 3
 #define BUTTON_COLS 3
+#define BUTTONS_PER_SCREEN (BUTTON_ROWS * BUTTON_COLS)
 
 #define JSON_PATH "/screen.json"
 #define IMAGE_PATH "/images"
@@ -28,12 +29,18 @@
 #define BUTTON_INDEX "index"
 #define BUTTON_BACKGROUND "background"
 #define BUTTON_FOLDER "folder"
+#define BUTTON_PRESS "press"
+#define BUTTON_APP "app"
+#define BUTTON_SCRIPT "script"
 
 #define FOLDER_BUTTONS "buttons"
 
 #define FOLDER_TYPE "folder"
 #define GAMING_TYPE "gaming"
 #define AUDIO_TYPE "audio"
+#define KEYBOARD_TYPE "keyboard"
+#define APP_TYPE "app"
+#define SCRIPT_TYPE "script"
 
 // font config
 #define FONT &FreeSansOblique12pt7b
@@ -43,6 +50,7 @@
 #define TOUCH_THRESHOLD 40
 
 #define DOUBLE_TAP_THRESHOLD 500
+#define SWIPE_THRESHOLD 100
 
 // screen data
 #define SCREEN_WIDTH 480
@@ -55,3 +63,4 @@
 #define USB_PRODUCT "ScreenMacro"
 #define TIMED_READ_TIMEOUT 100
 
+#define MILS_TO_SLEEP (1000*60*5)

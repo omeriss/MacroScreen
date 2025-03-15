@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import ScreenMacroLogo from "../../assets/ScreenMacro.png";
 import ButtonsScreen from "../../components/ButtonsScreen/ButtonsScreen";
 import Editor from "../../components/Editor/Editor";
-import FolderNavigation from "../../components/FolderNavigation/FolderNavigation";
 import styles from "./MainPage.module.css";
 import FolderScreen from "../../interfaces/FolderScreen";
-import { Button, ButtonType, FolderButton } from "../../interfaces/Buttons";
-import { isFolderButton } from "../../utils/buttonTypeUtils";
+import { FolderButton } from "../../interfaces/Buttons";
 import { useRecoilState } from "recoil";
 import {
   pathState,
@@ -15,8 +13,8 @@ import {
 } from "../../store/store";
 import TopNavigation from "../../components/TopNavigation/TopNavigation";
 import useProject from "../../hooks/project";
-import { MdContentCopy, MdUpload, MdHistory } from "react-icons/md";
-import { navigationPanels } from "../../config/navigationPanels";
+import { NAVIGATION_PANELS } from "../../config/navigationPanels";
+import CreateButton from "../../components/CreateButton/CreateButton";
 
 const MainPage = () => {
   const [path, setPath] = useRecoilState<string[]>(pathState);
@@ -41,6 +39,8 @@ const MainPage = () => {
     );
   }, [path, rootScreen]);
 
+  const PanelComponent = NAVIGATION_PANELS[selectedNavigationPanel].component;
+
   return (
     <main className={styles.mainPage}>
       <nav className={styles.nav}>
@@ -55,7 +55,7 @@ const MainPage = () => {
       </nav>
       <div className={styles.contentContainer}>
         <section className={styles.sideSelection}>
-          {navigationPanels.map((icon, index) => {
+          {NAVIGATION_PANELS.map((icon, index) => {
             const Icon = icon.icon;
             return (
               <div
@@ -70,7 +70,8 @@ const MainPage = () => {
             );
           })}
         </section>
-        {navigationPanels[selectedNavigationPanel].component({})}
+        <PanelComponent />
+        <CreateButton />
         <div className={`toolbar-section ${styles.editSection}`}>
           <div className="toolbar-section-head"></div>
           <div className="toolbar-section-subtitle">{path.join(" > ")}</div>

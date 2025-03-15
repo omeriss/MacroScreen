@@ -40,7 +40,7 @@ public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguratio
     {
         const int retryDelay = 1000;
         
-        while (retry)
+        do
         {
             try
             {
@@ -49,17 +49,32 @@ public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguratio
             }
             catch (Exception e)
             {
+                if (!retry) throw;
                 Console.WriteLine(e.Message);
                 Thread.Sleep(retryDelay);
             }
-        }
+        } while (retry);
     }
 
     public bool UploadCode(UploadConfig config)
     {
         var jsonPath = Path.Combine(config.UploadPath, _uploadSettings.JsonPath);
         var json = File.ReadAllText(jsonPath);
+
+        var programDataPath = Path.Combine(config.UploadPath, _uploadSettings.ProgramDataPath);
+        var programData = Directory.Exists(programDataPath) ? Directory.GetFiles(programDataPath) : [];
         
+        var programDataDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+            AppDomain.CurrentDomain.FriendlyName);
+        
+        if (!Directory.Exists(programDataDir)) Directory.CreateDirectory(programDataDir);
+
+        foreach (var file in programData)
+        {
+            File.Copy(file,
+                Path.Combine(programDataDir, Path.GetFileName(file)), true);
+        }
+
         var images = Directory.GetFiles(Path.Combine(config.UploadPath, _uploadSettings.ImagesPath));
         var usedImages = images.Where(f => json.Contains($"\"label\":\"/{Path.GetFileName(f)}\""));
         

@@ -1,6 +1,9 @@
+import AppSelection from "../components/AppSelection/AppSelection";
 import Button from "../components/Button/Button";
 import EditColor from "../components/EditColor/EditColor";
 import EditLabel from "../components/EditLabel/EditLabel";
+import EditScript from "../components/EditScript/EditScript";
+import KeybindButton from "../components/KeyBindCapture/KeyBindCapture";
 import FolderScreen from "./FolderScreen";
 
 export enum ButtonType {
@@ -9,6 +12,7 @@ export enum ButtonType {
   App = "app",
   AudioControl = "audio",
   Gaming = "gaming",
+  Script = "script",
 }
 
 export interface BaseButton {
@@ -23,18 +27,28 @@ export interface FolderButton extends BaseButton {
 }
 
 export interface AppButton extends BaseButton {
-  path: string;
+  app: string;
 }
 
 export interface KeyboardButton extends BaseButton {
-  press: string;
+  press: number[];
 }
 
-export type Button = BaseButton | FolderButton | AppButton | KeyboardButton;
+export interface ScriptButton extends BaseButton {
+  script: string;
+}
+
+export type Button =
+  | BaseButton
+  | FolderButton
+  | AppButton
+  | KeyboardButton
+  | ScriptButton;
 type ButtonKeys = keyof (BaseButton &
   FolderButton &
   AppButton &
-  KeyboardButton);
+  KeyboardButton &
+  ScriptButton);
 
 export const DEFUALT_BUTTONS_VALUES: { [key in ButtonType]: Button } = {
   [ButtonType.Keyboard]: {
@@ -42,7 +56,7 @@ export const DEFUALT_BUTTONS_VALUES: { [key in ButtonType]: Button } = {
     index: 0,
     label: "New Button",
     background: 0x000000,
-    press: "A",
+    press: [],
   },
   [ButtonType.Folder]: {
     type: ButtonType.Folder,
@@ -58,7 +72,7 @@ export const DEFUALT_BUTTONS_VALUES: { [key in ButtonType]: Button } = {
     index: 0,
     label: "New Button",
     background: 0x000000,
-    path: "",
+    app: "",
   },
   [ButtonType.AudioControl]: {
     type: ButtonType.AudioControl,
@@ -72,14 +86,25 @@ export const DEFUALT_BUTTONS_VALUES: { [key in ButtonType]: Button } = {
     label: "New Button",
     background: 0x000000,
   },
+  [ButtonType.Script]: {
+    type: ButtonType.Script,
+    index: 0,
+    label: "New Button",
+    background: 0x000000,
+    script: "",
+  },
 };
 
 export const EDIT_COMPONENT: {
   [key in string]: null | React.FC<{
     value: any;
     setValue: (value: any) => void;
+    setButton: (func: (button: Button) => Button) => void;
   }>;
 } = {
   label: EditLabel,
   background: EditColor,
+  press: KeybindButton,
+  app: AppSelection,
+  script: EditScript,
 };

@@ -3,12 +3,19 @@ import { FolderButton, Button } from "../interfaces/Buttons";
 import FolderScreen from "../interfaces/FolderScreen";
 import { isFolderButton } from "../utils/buttonTypeUtils";
 import { useRecoilState } from "recoil";
-import { pathState, rootScreenState } from "../store/store";
+import {
+  createButtonState,
+  CreateType,
+  pathState,
+  rootScreenState,
+} from "../store/store";
+import { toast } from "react-toastify";
 
 const useButtonControl = () => {
   const [path, setPath] = useRecoilState<string[]>(pathState);
   const [rootScreen, setRootScreen] =
     useRecoilState<FolderScreen>(rootScreenState);
+  const [createButton, setCreateButton] = useRecoilState(createButtonState);
 
   const deepCopyToPath = (basePath: string[], screen: FolderScreen) => {
     const newRootScreen = { ...screen };
@@ -54,6 +61,12 @@ const useButtonControl = () => {
             : buttonTemp,
         ])
       );
+
+      // check if there is a button with the same key
+      if (currentScreen.buttons[key] != undefined) {
+        toast.error("Button with the same name already exists");
+        return prev;
+      }
 
       currentScreen.buttons[key] = button;
 
@@ -130,7 +143,17 @@ const useButtonControl = () => {
     });
   };
 
-  return { addButton, removeButton, editButton, changeIndex };
+  const createButtonPopup = (type: CreateType, modifyPath?: string[]) => {
+    setCreateButton({ type, path: modifyPath });
+  };
+
+  return {
+    addButton,
+    removeButton,
+    editButton,
+    changeIndex,
+    createButtonPopup,
+  };
 };
 
 export default useButtonControl;

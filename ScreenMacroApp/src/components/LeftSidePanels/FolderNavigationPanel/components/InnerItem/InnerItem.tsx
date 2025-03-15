@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button, FolderButton } from "../../../../interfaces/Buttons";
+import { Button, FolderButton } from "../../../../../interfaces/Buttons";
 import styles from "./InnerItem.module.css";
 import {
   FOLDER_PADDING_DEC,
@@ -15,9 +15,9 @@ import {
 } from "react-icons/md";
 import FolderNavigationItem from "../FolderNavigationItem/FolderNavigationItem";
 import { useRecoilState } from "recoil";
-import { pathState } from "../../../../store/store";
-import ContextMenu from "../../../ContextMenu/ContextMenu";
-import useButtonControl from "../../../../hooks/buttonControl";
+import { CreateType, pathState } from "../../../../../store/store";
+import ContextMenu from "../../../../ContextMenu/ContextMenu";
+import useButtonControl from "../../../../../hooks/buttonControl";
 
 interface InnerItemProps {
   keyString: string;
@@ -80,7 +80,7 @@ export const InnerFolderItem = ({
 }: InnerItemProps & { button: FolderButton }) => {
   const [currentPath, setCurrentPath] = useRecoilState(pathState);
   const [open, setOpen] = useState(false);
-  const { removeButton, addButton } = useButtonControl();
+  const { removeButton, addButton, createButtonPopup } = useButtonControl();
 
   const padding = (INIT_TAB + path.length) * PADDING - FOLDER_PADDING_DEC;
 
@@ -127,17 +127,38 @@ export const InnerFolderItem = ({
         onDrop={handleDrop}
         onDragOver={handleDragOver}
       >
-        <div>
-          <MdChevronRight
-            onClick={(event) => {
-              event.stopPropagation();
-              setOpen(!open);
-            }}
-            style={{ transform: open ? "rotate(90deg)" : "" }}
-          />
-          {open ? <MdFolderOpen /> : <MdFolder />}
-          {keyString}
-        </div>
+        <ContextMenu
+          style={{ paddingLeft: padding }}
+          options={[
+            {
+              label: "Delete",
+              onClick: () => removeButton(keyString, path),
+            },
+            {
+              label: "Add Folder",
+              onClick: () =>
+                createButtonPopup(CreateType.FOLDER, [...path, keyString]),
+            },
+            {
+              label: "Add Button",
+              onClick: () =>
+                createButtonPopup(CreateType.BUTTON, [...path, keyString]),
+            },
+          ]}
+        >
+          <div>
+            <MdChevronRight
+              onClick={(event) => {
+                event.stopPropagation();
+                setOpen(!open);
+              }}
+              style={{ transform: open ? "rotate(90deg)" : "" }}
+            />
+
+            {open ? <MdFolderOpen /> : <MdFolder />}
+            {keyString}
+          </div>
+        </ContextMenu>
       </div>
       {open && (
         <FolderNavigationItem

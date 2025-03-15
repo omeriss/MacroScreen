@@ -7,7 +7,7 @@ MusicScreen::MusicScreen(std::function<void()> exit) : _exit(exit) {
 #include <pgmspace.h>
 
 void MusicScreen::update() {
-    if(checkDoubleTap(_lastPress, _lifted)) {
+    if(checkSwipe() == SWIPE_LEFT) {
         _exit();
         return;
     }
@@ -23,7 +23,7 @@ void MusicScreen::draw() {
     _next.draw();
     _prev.draw();
     _playPause.draw();
-    _timeLineSlider.update(0, 0);
+    _timeLineSlider.update(0, 1);
 
     UsbManager::getInstance().sendCommand(CommandType::StartAudio, nullptr, 0);
 }

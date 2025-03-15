@@ -1,9 +1,10 @@
 #pragma once
 
 #include <vector>
+#include <tuple>
 #include "ui/components/buttons/ActionButton.h"
 #include "ui/components/buttons/KeyboardButton.h"
-#include "ui/components/buttons/AppButton.h"
+#include "ui/components/buttons/CommandButton.h"
 #include "ui/screens/Screen.h"
 #include "ui/screens/MusicScreen.h"
 #include "ui/screens/GamingScreen.h"
@@ -14,7 +15,7 @@
 
 class UiManager {
 public:
-    UiManager() {};
+    UiManager();
 
     void update();
 
@@ -27,7 +28,7 @@ public:
 private:
     Button *createButton(JsonObject buttonData, Screen* containingScreen);
     ButtonsScreen *generateScreen(JsonVariant doc);
-
     Screen *_currentScreen;
+    unsigned long _lastUpdate = 0;
 };
 

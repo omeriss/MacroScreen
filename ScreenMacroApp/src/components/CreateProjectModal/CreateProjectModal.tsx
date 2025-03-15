@@ -73,7 +73,7 @@ const CreateProjectModal = ({ isOpen, onClose }: CreateModelProps) => {
           <legend>Name:</legend>
           <input
             className={popupStyles.input}
-            name="input"
+            name="name"
             placeholder="Enter name..."
             type="text"
             value={name}

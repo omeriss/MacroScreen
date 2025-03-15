@@ -40,8 +40,19 @@ const Editor = ({}: EditorProps) => {
             <section className={styles.editor}>
               {Object.entries(currentButton).map(([key, value]) => (
                 <div key={key}>
-                  {EDIT_COMPONENT[key] != undefined &&
-                    EDIT_COMPONENT[key]({ value, setValue: edit(key) })}
+                  {(() => {
+                    const Component = EDIT_COMPONENT[key];
+                    if (Component == undefined) return <></>;
+                    return (
+                      <Component
+                        value={value}
+                        setValue={edit(key)}
+                        setButton={(func: (button: Button) => Button) =>
+                          editButton(func(currentButton), path)
+                        }
+                      />
+                    );
+                  })()}
                 </div>
               ))}
             </section>

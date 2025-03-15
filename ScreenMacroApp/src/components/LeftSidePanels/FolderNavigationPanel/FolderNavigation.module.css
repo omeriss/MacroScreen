@@ -23,6 +23,7 @@
 .toolbarSubtitle {
   display: flex;
   justify-content: space-between;
+  height: auto;
 
   div {
     font-size: 18px;

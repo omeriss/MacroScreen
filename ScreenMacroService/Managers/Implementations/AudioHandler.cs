@@ -43,6 +43,9 @@ public class AudioHandler(IConfiguration config, IFileManager fileManager, IComH
             if (session.GetPlaybackInfo().PlaybackStatus ==
                 GlobalSystemMediaTransportControlsSessionPlaybackStatus.Playing)
                 score += _audioSettings.PlayingRating;
+            
+            if (_currentSession is not null && session.SourceAppUserModelId == _currentSession.SourceAppUserModelId)
+                score += _audioSettings.CurrentSessionRating;
 
             if (_audioSettings.PriorityServices.TryGetValue(session.SourceAppUserModelId, out int priority))
                 score += priority;
@@ -69,7 +72,7 @@ public class AudioHandler(IConfiguration config, IFileManager fileManager, IComH
 
             if (_currentSession is null) return;
         }
-
+        
         var mediaProperties = await _currentSession.TryGetMediaPropertiesAsync();
         var time = _currentSession.GetTimelineProperties();
         bool mediaSwapped = mediaProperties.Title != _lastTitle;
@@ -193,17 +196,17 @@ public class AudioHandler(IConfiguration config, IFileManager fileManager, IComH
         _lastTitle = "";
     }
 
-    private enum AudioActionType : short
+    private enum AudioActionType : byte
     {
-        Play,
         Pause,
-        Next,
-        Previous
+        Play,
+        Previous,
+        Next
     }
 
     public async Task AudioAction(Command command)
     {
-        AudioActionType action = command.Read<AudioActionType>();
+        AudioActionType action = (AudioActionType)command.Read<byte>();
 
         try
         {

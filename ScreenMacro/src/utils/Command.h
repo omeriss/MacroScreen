@@ -24,6 +24,7 @@ enum class CommandType : uint8_t {
     SendAudio,
     AudioAction,
     Boot,
+    RunScript,
 };
 
 

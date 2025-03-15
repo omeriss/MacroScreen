@@ -20,4 +20,5 @@ public enum CommandType
     SendAudio,
     AudioAction,
     Boot,
+    RunScript,
 }

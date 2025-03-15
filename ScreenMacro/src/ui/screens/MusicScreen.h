@@ -3,6 +3,7 @@
 #include "Screen.h"
 #include "utils/TouchUtils.h"
 #include "ui/components/buttons/ToggleButton.h"
+#include "ui/components/buttons/ActionButton.h"
 #include "ui/components/TimeLineSlider.h"
 #include "utils/UsbManager.h"
 
@@ -30,15 +31,24 @@ private:
 
     ToggleButton _playPause = ToggleButton("/play.png", "/pause.png", BUTTON_X(1), BUTTON_Y, BUTTONS_SIZE, BUTTONS_SIZE,
                                            TFT_BLACK, TFT_BLACK, HOVER_COLOR, [this](bool b) {
+                uint8_t d = b;
+                UsbManager::getInstance().sendCommand(CommandType::AudioAction, &d, 1);
             });
-    Button _prev = Button("/prev.png", BUTTON_X(0), BUTTON_Y, BUTTONS_SIZE, BUTTONS_SIZE, TFT_BLACK, TFT_BLACK, HOVER_COLOR);
-    Button _next = Button("/next.png", BUTTON_X(2), BUTTON_Y, BUTTONS_SIZE, BUTTONS_SIZE, TFT_BLACK, TFT_BLACK, HOVER_COLOR);
+    ActionButton _prev = ActionButton(
+            []() {
+                uint8_t d = 2;
+                UsbManager::getInstance().sendCommand(CommandType::AudioAction, &d, 1);
+            },
+            "/prev.png", BUTTON_X(0), BUTTON_Y, BUTTONS_SIZE, BUTTONS_SIZE, TFT_BLACK, TFT_BLACK, HOVER_COLOR);
+    ActionButton _next = ActionButton(
+            []() {
+                uint8_t d = 3;
+                UsbManager::getInstance().sendCommand(CommandType::AudioAction, &d, 1);
+            },
+            "/next.png", BUTTON_X(2), BUTTON_Y, BUTTONS_SIZE, BUTTONS_SIZE, TFT_BLACK, TFT_BLACK,
+            HOVER_COLOR);
     TimeLineSlider _timeLineSlider = TimeLineSlider(50, 200, 380);
 
-
-
-    unsigned long _lastPress = 0;
-    bool _lifted = false;
     uint16_t _lastImgWidth = 0;
     uint16_t _lastImgHeight = 0;
 };

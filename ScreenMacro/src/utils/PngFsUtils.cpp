@@ -33,7 +33,7 @@ void PngUtils::pngDraw(PNGDRAW *pDraw) {
     auto *drawData = (ImgDrawData *) pDraw->pUser;
     png.getLineAsRGB565(pDraw, lineBuffer, PNG_RGB565_BIG_ENDIAN, drawData->backgroundColor);
 
-    if (png.getAlphaMask(pDraw, maskBuffer, 255)) {
+    if (png.getAlphaMask(pDraw, maskBuffer, 180)) {
         // Note: pushMaskedImage is for pushing to the TFT and will not work pushing into a sprite
         ScreenManager::getInstance().tft.pushMaskedImage(drawData->x, drawData->y + pDraw->y, pDraw->iWidth, 1, lineBuffer, maskBuffer);
     }

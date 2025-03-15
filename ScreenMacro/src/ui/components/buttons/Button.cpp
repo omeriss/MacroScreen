@@ -7,18 +7,19 @@ Button::Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h, ui
                uint16_t textColor) {
     _xd = 0;
     _yd = 0;
-    _textdatum = MC_DATUM;
-    currstate = false;
-    laststate = false;
+    _textDatum = MC_DATUM;
     _x1 = x;
     _y1 = y;
     _w = w;
     _h = h;
-    _outlinecolor = outlineColor;
+    _outlineColor = outlineColor;
     _fillcolor = fill;
-    _textcolor = textColor;
-    _textsize = BUTTON_TEXT_SIZE;
+    _textColor = textColor;
+    _textSize = BUTTON_TEXT_SIZE;
     _label = label;
+    _touchUp = false;
+    _hovering = false;
+    _pressing = false;
 }
 
 Button::Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill) :
@@ -31,17 +32,35 @@ Button::Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h) :
 void Button::update() {
     auto& screenManager = ScreenManager::getInstance();
 
-    press(
-            screenManager.isPressed() && contains(screenManager.getPressX(), screenManager.getPressY()));
+    if (!screenManager.isPressed()){
+        if (_hovering && _pressing) {
+            _hovering = false;
+            draw(false, false);
+            onPress();
+        }
 
-    if (justReleased()) draw();
+        _touchUp = true;
+        _pressing = false;
 
-    if (!justPressed()) return;
+        return;
+    }
 
-    draw(true);
-    onPress();
+    if (!screenManager.getPressX() || !screenManager.getPressY())
+        return;
 
-    delay(10); // debounce
+    if (!_touchUp && !_pressing) return;
+    _touchUp = false;
+
+    bool isContained = contains(screenManager.getPressX(), screenManager.getPressY());
+
+    if (isContained && !_hovering) {
+        _hovering = true;
+        _pressing = true;
+        draw(true, false);
+    } else if (!isContained && _hovering) {
+        _hovering = false;
+        draw(false, false);
+    }
 }
 
 void Button::drawText(uint16_t fill, uint16_t text) {
@@ -51,15 +70,15 @@ void Button::drawText(uint16_t fill, uint16_t text) {
         screenManager.tft.setCursor(_x1 + (_w / 8),
                                     _y1 + (_h / 4));
         screenManager.tft.setTextColor(text);
-        screenManager.tft.setTextSize(_textsize);
+        screenManager.tft.setTextSize(_textSize);
         screenManager.tft.print(_label.c_str());
     }
     else {
         screenManager.tft.setTextColor(text, fill);
-        screenManager.tft.setTextSize(_textsize);
+        screenManager.tft.setTextSize(_textSize);
 
         uint8_t tempdatum = screenManager.tft.getTextDatum();
-        screenManager.tft.setTextDatum(_textdatum);
+        screenManager.tft.setTextDatum(_textDatum);
         uint16_t tempPadding = screenManager.tft.getTextPadding();
         screenManager.tft.setTextPadding(0);
 
@@ -110,8 +129,14 @@ void Button::drawImage() {
     }
 }
 
-void Button::draw(bool inverted) {
+void Button::draw(bool inverted, bool reset) {
     auto& screenManager = ScreenManager::getInstance();
+
+    if (reset) {
+        _touchUp = false;
+        _hovering = false;
+        _pressing = false;
+    }
 
     screenManager.tft.setFreeFont(FONT);
 
@@ -119,11 +144,11 @@ void Button::draw(bool inverted) {
 
     if(!inverted) {
         fill    = _fillcolor;
-        outline = _outlinecolor;
-        text    = _textcolor;
+        outline = _outlineColor;
+        text    = _textColor;
     } else {
-        fill    = _textcolor;
-        outline = _outlinecolor;
+        fill    = _textColor;
+        outline = _outlineColor;
         text    = _fillcolor;
     }
 
@@ -138,17 +163,7 @@ void Button::draw(bool inverted) {
     }
 }
 
-bool Button::contains(int16_t x, int16_t y) const {
+bool Button::contains(uint16_t x, uint16_t y) const {
     return ((x >= _x1) && (x < (_x1 + _w)) &&
             (y >= _y1) && (y < (_y1 + _h)));
 }
-
-void Button::press(bool p) {
-    laststate = currstate;
-    currstate = p;
-}
-
-bool Button::isPressed() const    { return currstate; }
-bool Button::justPressed() const  { return (currstate && !laststate); }
-bool Button::justReleased() const { return (!currstate && laststate); }
-

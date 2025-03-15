@@ -7,9 +7,7 @@ namespace Managers;
 public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddManagers(this IServiceCollection services)
-    {
-        var config = services.BuildServiceProvider().GetService<IConfiguration>();
-        
+    {        
         services.AddSingleton<IComHandler, ComHandler>();
         services.AddSingleton<IScreenMacroHandler, ScreenMacroHandler>();
         services.AddSingleton<IActions, Actions>();

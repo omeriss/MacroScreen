@@ -1,5 +1,5 @@
 import { FaBeer } from "react-icons/fa";
-import { ButtonType } from "../../../../interfaces/Buttons";
+import { ButtonType } from "../../../../../interfaces/Buttons";
 import { IconType } from "react-icons";
 
 export const PADDING = 25;

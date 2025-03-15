@@ -1,5 +1,5 @@
 .menu {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 100%;
   background: var(--primery-color-dark);
@@ -21,7 +21,8 @@
     border-radius: 4px;
     padding-left: 20px;
     color: var(--nav-text-color);
-    min-height: 30px;
+    min-height: 20px;
+    font-size: 14px;
   }
 
   li:hover {

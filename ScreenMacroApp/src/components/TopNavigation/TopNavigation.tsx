@@ -29,7 +29,6 @@ const TopNavigation = () => {
     }
 
     const removeStart = rootScreenStackIndex >= MAX_UNDO_ITEMS;
-    console.log(removeStart);
 
     setRootScreenStack((prev) => {
       const newStack = [...prev];
@@ -85,6 +84,17 @@ const TopNavigation = () => {
     },
   ];
 
+  const editButtons = [
+    {
+      label: "Undo",
+      onClick: undo,
+    },
+    {
+      label: "Redo",
+      onClick: redo,
+    },
+  ];
+
   useEffect(() => {
     const handleShortcuts = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === "s") {
@@ -127,7 +137,7 @@ const TopNavigation = () => {
         onClose={() => setCreateProjectOpen(false)}
       />
       <ExpandedButton buttons={fileButtons}>File</ExpandedButton>
-      <ExpandedButton buttons={[]}>Edit</ExpandedButton>
+      <ExpandedButton buttons={editButtons}>Edit</ExpandedButton>
       <ExpandedButton
         buttons={[
           {

@@ -23,11 +23,9 @@ const ContextMenu = ({ children, style, options }: ContextMenuProps) => {
 
     if (!containerRef.current) return;
 
-    const { left, top } = containerRef.current.getBoundingClientRect();
-
     setPosition({
-      x: event.pageX - left,
-      y: event.pageY - top,
+      x: event.pageX,
+      y: event.pageY,
     });
 
     setMenuVisible(true);
@@ -41,7 +39,10 @@ const ContextMenu = ({ children, style, options }: ContextMenuProps) => {
         event.target &&
         menuRef.current &&
         !menuRef.current.contains(event.target as Node) &&
-        !containerRef.current?.contains(event.target as Node)
+        !(
+          containerRef.current?.contains(event.target as Node) &&
+          event.type === "contextmenu"
+        )
       ) {
         setMenuVisible(false);
       }
@@ -76,6 +77,7 @@ const ContextMenu = ({ children, style, options }: ContextMenuProps) => {
               onClick={(event) => {
                 event.stopPropagation();
                 option.onClick();
+                setMenuVisible(false);
               }}
             >
               {option.label}

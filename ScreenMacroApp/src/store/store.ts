@@ -23,3 +23,16 @@ export const selectedNavigationPanelState = atom<number>({
   key: "selectedNavigationPanel",
   default: 0,
 });
+
+export enum CreateType {
+  FOLDER = "folder",
+  BUTTON = "button",
+}
+
+export const createButtonState = atom<{
+  type: CreateType;
+  path?: string[];
+} | null>({
+  key: "createButton",
+  default: null,
+});

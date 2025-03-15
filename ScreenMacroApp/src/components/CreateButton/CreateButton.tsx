@@ -3,62 +3,54 @@ import popupStyles from "../../styles/popup.module.css";
 import Modal from "react-modal";
 import { ButtonType, DEFUALT_BUTTONS_VALUES } from "../../interfaces/Buttons";
 import useButtonControl from "../../hooks/buttonControl";
+import { useRecoilState } from "recoil";
+import { createButtonState, CreateType } from "../../store/store";
 
-export enum CreateType {
-  FOLDER = "folder",
-  BUTTON = "button",
-}
-
-interface CreateButtonProps {
-  children: React.ReactNode;
-  type: CreateType;
-}
-
-const CreateButton = ({ children, type }: CreateButtonProps) => {
-  const [modalIsOpen, setIsOpen] = useState(false);
+const CreateButton = () => {
   const [buttonType, setButtonType] = useState<ButtonType>(ButtonType.Keyboard);
   const [name, setName] = useState("");
   const { addButton } = useButtonControl();
+  const [createState, setCreateState] = useRecoilState(createButtonState);
 
   const handleAddButton = () => {
     const selectedType =
-      type === CreateType.BUTTON ? buttonType : ButtonType.Folder;
+      createState?.type === CreateType.BUTTON ? buttonType : ButtonType.Folder;
 
     const button = {
       ...DEFUALT_BUTTONS_VALUES[selectedType],
       label: name,
     };
 
-    setIsOpen(false);
+    setCreateState(null);
     setName("");
     setButtonType(ButtonType.Keyboard);
 
-    addButton(button, name);
+    addButton(button, name, createState?.path);
   };
 
   return (
     <>
       <Modal
-        isOpen={modalIsOpen}
-        onRequestClose={() => setIsOpen(false)}
+        isOpen={createState !== null}
+        onRequestClose={() => setCreateState(null)}
         className={popupStyles.modal}
         overlayClassName={popupStyles.overlay}
         appElement={document.getElementById("root") as HTMLElement}
       >
         <section>
-          <h1>New {type}</h1>
+          <h1>New {createState?.type}</h1>
           <fieldset className={popupStyles.fieldset}>
             <legend>Name:</legend>
             <input
               className={popupStyles.input}
-              name="input"
+              name="name"
               placeholder="Enter name..."
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
           </fieldset>
-          {type === CreateType.BUTTON && (
+          {createState?.type === CreateType.BUTTON && (
             <fieldset className={popupStyles.fieldset}>
               <legend>Type:</legend>
               <select
@@ -79,11 +71,10 @@ const CreateButton = ({ children, type }: CreateButtonProps) => {
           )}
           <div className={popupStyles.buttons}>
             <button onClick={handleAddButton}>Ok</button>
-            <button onClick={() => setIsOpen(false)}>Cancel</button>
+            <button onClick={() => setCreateState(null)}>Cancel</button>
           </div>
         </section>
       </Modal>
-      <div onClick={() => setIsOpen(true)}>{children}</div>
     </>
   );
 };

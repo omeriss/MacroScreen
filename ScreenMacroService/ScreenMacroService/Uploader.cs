@@ -10,7 +10,7 @@ public class Uploader(ILogger<Worker> logger, IScreenMacroHandler screenMacroHan
 
     public void Execute()
     {
-        screenMacroHandler.Start();
+        screenMacroHandler.Start(false);
         screenMacroHandler.UploadCode(_uploadConfig);
         screenMacroHandler.Dispose();
     }

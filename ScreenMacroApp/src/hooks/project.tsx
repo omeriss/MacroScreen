@@ -14,6 +14,7 @@ import {
   IMAGES_FOLDER_NAME,
   JSON_FILE_NAME,
   LAST_PROJECTS,
+  PROGRAMDATA_FOLDER_NAME,
 } from "../config/projectfolder.config";
 import { savePathState, pathState, rootScreenState } from "../store/store";
 import FolderScreen from "../interfaces/FolderScreen";
@@ -95,8 +96,8 @@ const useProject = () => {
   const createProject = async (createPath: string) => {
     try {
       await mkdir(createPath);
-      console.log(await join(createPath, IMAGES_FOLDER_NAME));
       await mkdir(await join(createPath, IMAGES_FOLDER_NAME));
+      await mkdir(await join(createPath, PROGRAMDATA_FOLDER_NAME));
 
       const emptyRoot: FolderScreen = {
         buttons: {},

@@ -1,14 +1,15 @@
 import { MdContentCopy, MdHistory, MdUpload } from "react-icons/md";
-import FolderNavigation from "../components/FolderNavigation/FolderNavigation";
+import FolderNavigation from "../components/LeftSidePanels/FolderNavigationPanel/FolderNavigation";
+import UploadPanel from "../components/LeftSidePanels/UploadPanel/UploadPanel";
 
-export const navigationPanels = [
+export const NAVIGATION_PANELS = [
   {
     icon: MdContentCopy,
     component: FolderNavigation,
   },
   {
     icon: MdUpload,
-    component: FolderNavigation,
+    component: UploadPanel,
   },
   {
     icon: MdHistory,

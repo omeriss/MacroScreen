@@ -1,9 +1,13 @@
+using System.Reflection;
 using Common.Models.Settings;
 using Managers;
 using ScreenMacroService;
 
 
 var builder = Host.CreateApplicationBuilder(args);
+
+builder.Configuration.SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
 builder.Services.AddManagers();
 
@@ -18,6 +22,8 @@ if (args.Length > 0 && args[0] == uploadCommand)
         Console.Error.WriteLine("No path provided for upload command.");
         return;
     }
+    
+    Console.WriteLine($"Uploading from {path}");
     
     builder.Services.AddSingleton(new UploadConfig() { UploadPath = path });
     builder.Services.AddSingleton<Uploader>();
