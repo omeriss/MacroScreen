@@ -1,0 +1,30 @@
+.selectType {
+  display: flex;
+  flex-direction: column;
+}
+
+.selectType > div {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.selectType input[type="checkbox"] {
+  margin-right: 20px;
+}
+
+.selectType input[type="text"] {
+  width: 50%;
+  height: 30px;
+  border-radius: 5px;
+  border: 2px solid var(--marked-color);
+  background-color: var(--secondary-color);
+  padding-left: 10px;
+  color: white;
+}
+
+.selectType input[type="text"]:focus {
+  outline: none;
+}

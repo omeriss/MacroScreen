@@ -1,0 +1,13 @@
+.colorPicker {
+  border: none;
+}
+
+.selectColorSection {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+
+  label {
+    margin-right: 20px;
+  }
+}

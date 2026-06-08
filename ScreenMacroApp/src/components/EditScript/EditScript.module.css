@@ -1,0 +1,58 @@
+.editButton {
+  border: 1px solid var(--marked-color);
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--marked-color);
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.editButton:hover {
+  background-color: var(--marked-color);
+  color: white;
+  transition: 0.3s;
+}
+
+.select {
+  border: 1px solid var(--marked-color);
+  padding: 5px 10px;
+  cursor: pointer;
+  background-color: transparent;
+  color: var(--marked-color);
+  font-weight: bold;
+  border-radius: 5px;
+  margin-right: 20px;
+}
+
+.select:focus {
+  outline: none;
+}
+
+.textArea {
+  width: 500px;
+  height: 200px;
+  max-width: 500px;
+  margin-bottom: 30px;
+  border: 1px solid var(--marked-color);
+  background-color: var(--secondary-color);
+  color: white;
+  resize: none;
+}
+
+.textArea:focus {
+  outline: none;
+}
+
+.modalMainSection {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.modal {
+  width: min(50%, 600px);
+  top: 45%;
+}

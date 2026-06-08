@@ -1,0 +1,104 @@
+.appSelect input[type="text"] {
+  width: 50%;
+  height: 30px;
+  border-radius: 5px;
+  border: 2px solid var(--marked-color);
+  background-color: var(--secondary-color);
+  padding-left: 10px;
+  margin-left: 15px;
+  color: white;
+}
+
+.appSelect input[type="text"]:focus {
+  outline: none;
+}
+
+.appSelect {
+  display: flex;
+  width: 100%;
+}
+
+.appSelect > div {
+  z-index: 0;
+}
+
+.appSelect > div * {
+  z-index: -100;
+  position: relative;
+}
+
+.appsList {
+  overflow-y: scroll;
+  height: 300px;
+
+  li {
+    list-style-type: none;
+    padding: 10px;
+    margin-right: 40px;
+    border-bottom: 1px solid var(--marked-color);
+    cursor: pointer;
+
+    :hover {
+      background-color: var(--marked-color);
+      color: white;
+    }
+  }
+}
+.selected {
+  background-color: var(--marked-color);
+  color: white;
+}
+
+.modal {
+  width: min(50%, 600px) !important;
+  top: 45% !important;
+  transform: translate(-50%, -50%) !important;
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 6px;
+  }
+}
+
+.search {
+  height: 30px;
+  border-radius: 5px;
+  border: 2px solid var(--marked-color);
+  background-color: var(--secondary-color);
+  padding-left: 10px;
+  margin-left: 15px;
+  color: white;
+}
+
+.search:focus {
+  outline: none;
+}
+
+.appIcon {
+  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  img {
+    width: 100px;
+    height: 100px;
+  }
+
+  button {
+    margin-top: 20px;
+    height: 30px;
+    border-radius: 5px;
+    border: 2px solid var(--marked-color);
+    background-color: var(--secondary-color);
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 30px;
+  }
+}

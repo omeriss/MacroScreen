@@ -1,0 +1,38 @@
+#pragma once
+
+#include "TFT_eSPI.h"
+#include "utils/ScreenManager.h"
+#include <vector>
+#include <unordered_map>
+#include "config.h"
+#include "utils/PngFsUtils.h"
+#include <string>
+
+struct ButtonImage {
+    uint8_t* data;
+    uint32_t size;
+};
+
+class Button {
+public:
+    Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h);
+    Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill);
+    Button(const char *label, int16_t x, int16_t y, int16_t w, int16_t h, uint16_t fill, uint16_t outlineColor, uint16_t textColor);
+    void update();
+    void draw(bool inverted = false, bool reset = true);
+    virtual void onPress(){};
+protected:
+    int16_t  _x1, _y1; // Coordinates of top-left corner of button
+    int16_t  _xd, _yd; // Button text datum offsets (wrt centre of button)
+    uint16_t _w, _h;   // Width and height of button
+    uint8_t  _textSize, _textDatum; // Text size multiplier and text datum for button
+    uint16_t _outlineColor, _fillcolor, _textColor;
+    std::string     _label;
+
+    bool _touchUp, _hovering, _pressing; // Button states
+private:
+    bool     contains(uint16_t x, uint16_t y) const;
+    void drawText(uint16_t fill, uint16_t text);
+    void drawImage();
+    static std::unordered_map<std::string, ButtonImage> imageCache;
+};
