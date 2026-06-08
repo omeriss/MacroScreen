@@ -3,9 +3,8 @@ import ScreenMacroLogo from "../../assets/ScreenMacro.png";
 import ButtonsScreen from "../../components/ButtonsScreen/ButtonsScreen";
 import Editor from "../../components/Editor/Editor";
 import styles from "./MainPage.module.css";
-import FolderScreen from "../../interfaces/FolderScreen";
 import { FolderButton } from "../../interfaces/Buttons";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import {
   pathState,
   rootScreenState,
@@ -17,9 +16,8 @@ import { NAVIGATION_PANELS } from "../../config/navigationPanels";
 import CreateButton from "../../components/CreateButton/CreateButton";
 
 const MainPage = () => {
-  const [path, setPath] = useRecoilState<string[]>(pathState);
-  const [rootScreen, setRootScreen] =
-    useRecoilState<FolderScreen>(rootScreenState);
+  const path = useRecoilValue(pathState);
+  const rootScreen = useRecoilValue(rootScreenState);
   const project = useProject();
   const [selectedNavigationPanel, setNavigationPanel] = useRecoilState(
     selectedNavigationPanelState

@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import FolderScreen from "../../interfaces/FolderScreen";
 import { pathState, rootScreenState } from "../../store/store";
 import styles from "./Editor.module.css";

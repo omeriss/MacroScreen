@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import Modal from "react-modal";
 import styles from "./ImageModal.module.css";
-import Cropper, { Area, MediaSize } from "react-easy-crop";
-import { documentDir, join } from "@tauri-apps/api/path";
+import Cropper from "react-easy-crop";
+import { join } from "@tauri-apps/api/path";
 import popupStyles from "./../../styles/popup.module.css";
 import useCropImage from "./hooks/useCropImage";
 import { IMAGES_FOLDER_NAME } from "../../config/projectfolder.config";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { useRecoilValue } from "recoil";
 import { savePathState } from "../../store/store";
 import { readDir } from "@tauri-apps/plugin-fs";
 import { convertFileSrc } from "@tauri-apps/api/core";

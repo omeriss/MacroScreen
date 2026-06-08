@@ -1,6 +1,5 @@
 import { atom } from "recoil";
 import FolderScreen from "../interfaces/FolderScreen";
-import { ButtonType } from "../interfaces/Buttons";
 
 export const rootScreenState = atom<FolderScreen>({
   key: "rootScreen",

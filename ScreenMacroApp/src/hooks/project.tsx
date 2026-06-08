@@ -53,7 +53,6 @@ const useProject = () => {
 
     if (!(await exists(projectFilePath))) {
       return "This folder does not contain a project file";
-      return;
     }
 
     const projectFile = await readFile(projectFilePath);
@@ -123,10 +122,11 @@ const useProject = () => {
       });
 
       const lastProjects = JSON.parse(new TextDecoder().decode(file));
-      console.log(lastProjects);
 
       if (lastProjects.length > 0) {
         const error = await openProjectPath(lastProjects[0]);
+
+        if (error) toast.error(error);
       }
     }
   };

@@ -44,11 +44,12 @@ export type Button =
   | AppButton
   | KeyboardButton
   | ScriptButton;
-type ButtonKeys = keyof (BaseButton &
-  FolderButton &
-  AppButton &
-  KeyboardButton &
-  ScriptButton);
+
+// type ButtonKeys = keyof (BaseButton &
+//   FolderButton &
+//   AppButton &
+//   KeyboardButton &
+//   ScriptButton);
 
 export const DEFUALT_BUTTONS_VALUES: { [key in ButtonType]: Button } = {
   [ButtonType.Keyboard]: {

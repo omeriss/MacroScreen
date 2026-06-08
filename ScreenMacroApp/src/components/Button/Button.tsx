@@ -2,8 +2,7 @@ import { useEffect, useMemo, useRef } from "react";
 import styles from "./Button.module.css";
 import { useState } from "react";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { appDataDir, dataDir, documentDir, join } from "@tauri-apps/api/path";
-import ImageModal from "../ImageModal/ImageModal";
+import { join } from "@tauri-apps/api/path";
 import {
   BORDER_RADIUS_PERCENTAGE,
   TEXT_HIGHT_PERCENTAGE,
@@ -11,7 +10,6 @@ import {
 import { useRecoilState, useRecoilValue } from "recoil";
 import { savePathState, pathState } from "../../store/store";
 import { IMAGES_FOLDER_NAME } from "../../config/projectfolder.config";
-import useButtonControl from "../../hooks/buttonControl";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -30,7 +28,6 @@ const Button = ({ background, label, disabled, buttonKey }: ButtonProps) => {
   const [borderRadius, setBorderRadius] = useState(0);
   const [currentPath, setCurrentPath] = useRecoilState(pathState);
   const savePath = useRecoilValue(savePathState);
-  const [isHidden, setIsHidden] = useState(false);
 
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: buttonKey });

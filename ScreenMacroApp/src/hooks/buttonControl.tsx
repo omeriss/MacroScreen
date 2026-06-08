@@ -1,4 +1,3 @@
-import { path } from "@tauri-apps/api";
 import { FolderButton, Button } from "../interfaces/Buttons";
 import FolderScreen from "../interfaces/FolderScreen";
 import { isFolderButton } from "../utils/buttonTypeUtils";
@@ -13,9 +12,8 @@ import { toast } from "react-toastify";
 
 const useButtonControl = () => {
   const [path, setPath] = useRecoilState<string[]>(pathState);
-  const [rootScreen, setRootScreen] =
-    useRecoilState<FolderScreen>(rootScreenState);
-  const [createButton, setCreateButton] = useRecoilState(createButtonState);
+  const [_, setRootScreen] = useRecoilState<FolderScreen>(rootScreenState);
+  const [__, setCreateButton] = useRecoilState(createButtonState);
 
   const deepCopyToPath = (basePath: string[], screen: FolderScreen) => {
     const newRootScreen = { ...screen };

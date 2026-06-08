@@ -1,7 +1,5 @@
 import { FunctionComponent, useRef } from "react";
 import styles from "./ResizableSidePanel.module.css";
-import { MdCreateNewFolder, MdNoteAdd } from "react-icons/md";
-import CreateButton, { CreateType } from "../../CreateButton/CreateButton";
 
 interface ResizableSidePanelProps {
   children: React.ReactNode;

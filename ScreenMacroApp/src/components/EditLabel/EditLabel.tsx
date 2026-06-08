@@ -1,6 +1,4 @@
-import { CheckMenuItem } from "@tauri-apps/api/menu";
 import styles from "./EditLabel.module.css";
-import { event } from "@tauri-apps/api";
 import ImageModal from "../ImageModal/ImageModal";
 
 interface EditLabelProps {
