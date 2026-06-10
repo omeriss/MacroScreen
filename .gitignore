@@ -1,1 +1,5 @@
-/installer
+installer/bin/
+installer/obj/
+installer/staging/
+installer/out/
+.claude
