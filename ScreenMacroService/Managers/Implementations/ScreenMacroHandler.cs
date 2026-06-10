@@ -8,11 +8,13 @@ using System.Linq;
 using Common.Models.Settings;
 using Common.Utils;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Managers.Implementations;
 
-public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguration config, IFileManager fileManager) : IScreenMacroHandler
+public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguration config, IFileManager fileManager, ILogger<ScreenMacroHandler> logger) : IScreenMacroHandler
 {
+    private readonly ILogger<ScreenMacroHandler> _logger = logger;
     private readonly IComHandler _com = com;
     private readonly IActions _actions = actions;
     private Dictionary<CommandType, MethodInfo> _actionMethods = actions.GetType().GetMethods()
@@ -39,7 +41,8 @@ public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguratio
     public void Start(bool retry = true)
     {
         const int retryDelay = 1000;
-        
+        string? lastError = null;
+
         do
         {
             try
@@ -50,7 +53,14 @@ public class ScreenMacroHandler(IComHandler com, IActions actions, IConfiguratio
             catch (Exception e)
             {
                 if (!retry) throw;
-                Console.WriteLine(e.Message);
+
+                // Retries every second, so only log when the reason changes instead of filling the log
+                if (e.Message != lastError)
+                {
+                    _logger.LogWarning("Could not connect to the device: {Message} (retrying every {Delay} ms)", e.Message, retryDelay);
+                    lastError = e.Message;
+                }
+
                 Thread.Sleep(retryDelay);
             }
         } while (retry);

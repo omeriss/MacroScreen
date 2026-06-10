@@ -7,23 +7,16 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Reference Include="System.IO.Ports">
-        <HintPath>..\ScreenMacroService\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.IO.Ports.dll</HintPath>
-      </Reference>
-      <Reference Include="System.Management">
-        <HintPath>..\ScreenMacroService\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Management.dll</HintPath>
-      </Reference>
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.4" />
       <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="3.1.18" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
-      <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.2.0" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.0" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.1.6" />
       <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="9.0.0" />
       <PackageReference Include="System.Drawing.Common" Version="9.0.1" />
+      <PackageReference Include="System.IO.Ports" Version="9.0.0" />
+      <PackageReference Include="System.Management" Version="9.0.0" />
     </ItemGroup>
 
     <ItemGroup>

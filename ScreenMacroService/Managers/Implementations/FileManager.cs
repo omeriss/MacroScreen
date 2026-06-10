@@ -5,11 +5,13 @@ using Common.Models.Settings;
 using Common.Utils;
 using Managers.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace Managers.Implementations;
 
-public class FileManager(IConfiguration config, IComHandler comHandler) : IFileManager
+public class FileManager(IConfiguration config, IComHandler comHandler, ILogger<FileManager> logger) : IFileManager
 {
+    private readonly ILogger<FileManager> _logger = logger;
     private readonly FileSettings _fileSettings = config.GetSection("File").Get<FileSettings>()!;
     private readonly IComHandler _comHandler = comHandler;
 
@@ -73,7 +75,7 @@ public class FileManager(IConfiguration config, IComHandler comHandler) : IFileM
             Command response = _comHandler.GetCommand();
             if (response.Type != CommandType.Log) throw new CommandReadException("Invalid command type");
 
-            Console.WriteLine(Encoding.UTF8.GetString(response.Payload));
+            _logger.LogInformation("Device file {Name}: {Content}", name, Encoding.UTF8.GetString(response.Payload));
         }
     }
     

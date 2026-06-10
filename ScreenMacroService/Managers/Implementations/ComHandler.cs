@@ -11,12 +11,14 @@ using Common.Models.Settings;
 using Common.Utils;
 using Managers.Interfaces;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using CommandType = Common.Models.CommandType;
 
 namespace Managers.Implementations;
 
-public class ComHandler(IConfiguration configuration) : IComHandler
+public class ComHandler(IConfiguration configuration, ILogger<ComHandler> logger) : IComHandler
 {
+    private readonly ILogger<ComHandler> _logger = logger;
     private SerialPort? _serialPort = null;
     private readonly ComSettings _comSettings = configuration.GetSection("Com").Get<ComSettings>()!;
     public object ReadLock { get; } = new object();
@@ -172,7 +174,7 @@ public class ComHandler(IConfiguration configuration) : IComHandler
                 if (command.Type == CommandType.Acknowledge && id.Equals(command.Read<T>()))
                     return true;
                 if (command.Type == CommandType.Log)
-                    Console.WriteLine(Encoding.UTF8.GetString(command.Payload));
+                    _logger.LogInformation("Device: {Message}", Encoding.UTF8.GetString(command.Payload));
             }
             catch (CommandReadException) { }
         }
@@ -190,6 +192,7 @@ public class ComHandler(IConfiguration configuration) : IComHandler
         _serialPort.RtsEnable = true;
 
         _serialPort.Open();
+        _logger.LogInformation("Connected to the device on {Port}", portName);
     }
     
     public void Stop()
