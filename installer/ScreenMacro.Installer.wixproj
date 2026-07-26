@@ -1,0 +1,18 @@
+<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <!-- Overridden by build.ps1 (-p:Version=X.Y.Z); installer/version.txt is the source of truth -->
+    <Version Condition="'$(Version)' == ''">0.0.0</Version>
+    <StagingDir Condition="'$(StagingDir)' == ''">$(MSBuildThisFileDirectory)staging</StagingDir>
+
+    <InstallerPlatform>x64</InstallerPlatform>
+    <OutputName>ScreenMacro-Setup-$(Version)</OutputName>
+    <OutputPath>$(MSBuildThisFileDirectory)out\</OutputPath>
+    <IntermediateOutputPath>$(MSBuildThisFileDirectory)obj\$(Configuration)\</IntermediateOutputPath>
+
+    <!-- ICE43/ICE57: per-user shortcut rules that don't apply to a per-machine package (shortcuts go to the
+         All Users desktop / Start Menu). ICE61: expected, MajorUpgrade allows same-version reinstalls. -->
+    <SuppressIces>ICE43;ICE57;ICE61</SuppressIces>
+
+    <DefineConstants>$(DefineConstants);ProductVersion=$(Version);StagingDir=$(StagingDir)</DefineConstants>
+  </PropertyGroup>
+</Project>

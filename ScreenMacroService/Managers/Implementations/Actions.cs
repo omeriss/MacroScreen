@@ -4,18 +4,20 @@ using Common.Attributes;
 using Common.Models;
 using Common.Utils;
 using Managers.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Managers.Implementations;
 
-public class Actions(IStatisticsHandler statisticsHandler, IAudioHandler audioHandler) : IActions
+public class Actions(IStatisticsHandler statisticsHandler, IAudioHandler audioHandler, ILogger<Actions> logger) : IActions
 {
     private readonly IStatisticsHandler _statisticsHandler = statisticsHandler;
     private readonly IAudioHandler _audioHandler = audioHandler;
+    private readonly ILogger<Actions> _logger = logger;
 
     [CommandHandler(CommandType.Log)]
     public void Log(Command command)
     {
-        Console.WriteLine(Encoding.UTF8.GetString(command.Payload));
+        _logger.LogInformation("Device: {Message}", Encoding.UTF8.GetString(command.Payload));
     }
     
     private static string? FindLnkFile(string[] searchDirs, string input)
@@ -97,7 +99,7 @@ public class Actions(IStatisticsHandler statisticsHandler, IAudioHandler audioHa
         _audioHandler.AudioAction(command);
     }
     
-    static void RunScript(string filePath)
+    private void RunScript(string filePath)
     {
         ProcessStartInfo psi = new ProcessStartInfo();
         string extension = Path.GetExtension(filePath).ToLower();
@@ -121,7 +123,7 @@ public class Actions(IStatisticsHandler statisticsHandler, IAudioHandler audioHa
                 psi.Arguments = $"\"{filePath}\"";
                 break;
             default:
-                Console.WriteLine($"Unsupported file type: {filePath}");
+                _logger.LogWarning("Unsupported script file type: {FilePath}", filePath);
                 return;
         }
 

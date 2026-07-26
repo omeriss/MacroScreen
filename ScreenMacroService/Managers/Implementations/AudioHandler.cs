@@ -6,14 +6,16 @@ using Common.Models;
 using Common.Models.Settings;
 using Common.Utils;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.Processing;
 
 namespace Managers.Implementations;
 
-public class AudioHandler(IConfiguration config, IFileManager fileManager, IComHandler comHandler) : IAudioHandler
+public class AudioHandler(IConfiguration config, IFileManager fileManager, IComHandler comHandler, ILogger<AudioHandler> logger) : IAudioHandler
 {
+    private readonly ILogger<AudioHandler> _logger = logger;
     private Task? _processingTask;
     private CancellationTokenSource? _cancellationTokenSource;
     private GlobalSystemMediaTransportControlsSessionManager? _sessionManager;
@@ -120,7 +122,11 @@ public class AudioHandler(IConfiguration config, IFileManager fileManager, IComH
         command.Write(timeElapsed);
         command.Write(totalTime);
         
-        Console.WriteLine($"Title: {title}, Artist: {artist}, Time: {timeElapsed/1000%60}/{totalTime/1000%60}");
+        if (mediaSwapped)
+            _logger.LogInformation("Now playing: {Title} - {Artist}", title, artist);
+
+        // Sent every refresh (about once a second), so Debug level
+        _logger.LogDebug("Playback position {Elapsed}s / {Total}s", timeElapsed / 1000 % 60, totalTime / 1000 % 60);
         
         if (mediaSwapped)
         {

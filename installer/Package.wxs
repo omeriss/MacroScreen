@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <!-- Every custom action runs Setup.ps1 (installed next to the app) as SYSTEM.
+       The trailing "-Action" is completed at each use: $(PsCmd) Stop -->
+  <?define PsCmd='"[System64Folder]WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "[INSTALLFOLDER]Setup.ps1" -Action'?>
+
+  <!-- UpgradeCode identifies "the ScreenMacro product" across versions. NEVER change it,
+       otherwise new installers stop replacing old ones. -->
+  <Package Name="ScreenMacro"
+           Manufacturer="Omeriss"
+           Version="$(ProductVersion)"
+           UpgradeCode="51fb3ec6-cac8-4d11-9130-8ca9dc9f4d55"
+           Scope="perMachine"
+           Compressed="yes">
+
+    <!-- Versioning: an installer with a higher version first uninstalls the old one (running the OLD
+         version's uninstall steps), then installs the new one; all in one transaction. -->
+    <MajorUpgrade Schedule="afterInstallInitialize"
+                  AllowSameVersionUpgrades="yes"
+                  DowngradeErrorMessage="A newer version of ScreenMacro is already installed. Uninstall it first if you want to go back to an older version." />
+
+    <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
+
+    <Icon Id="AppIcon.ico" SourceFile="$(StagingDir)\icon.ico" />
+    <Property Id="ARPPRODUCTICON" Value="AppIcon.ico" />
+    <Property Id="ARPNOMODIFY" Value="1" />
+
+    <!-- C:\Program Files\ScreenMacro\
+           screenmacroapp.exe, Setup.ps1
+           Service\ScreenMacroService.exe (+ self-contained .NET runtime and dependencies) -->
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLFOLDER" Name="ScreenMacro">
+        <Directory Id="SERVICEDIR" Name="Service">
+          <Files Include="$(StagingDir)\service\**" />
+        </Directory>
+      </Directory>
+    </StandardDirectory>
+
+    <Component Id="AppComponent" Directory="INSTALLFOLDER" Bitness="always64">
+      <File Id="AppExe" Source="$(StagingDir)\screenmacroapp.exe" KeyPath="yes">
+        <Shortcut Id="DesktopShortcut" Directory="DesktopFolder" Name="ScreenMacro"
+                  WorkingDirectory="INSTALLFOLDER" Icon="AppIcon.ico" />
+        <Shortcut Id="StartMenuShortcut" Directory="ProgramMenuFolder" Name="ScreenMacro"
+                  WorkingDirectory="INSTALLFOLDER" Icon="AppIcon.ico" />
+      </File>
+
+      <!-- The service runs elevated, and a normal process cannot kill/restart an elevated one, so the app
+           always runs as administrator (UAC prompt on launch). Removed again on uninstall. -->
+      <RegistryValue Root="HKLM"
+                     Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion\AppCompatFlags\Layers"
+                     Name="[INSTALLFOLDER]screenmacroapp.exe"
+                     Type="string" Value="~ RUNASADMIN" />
+    </Component>
+
+    <Component Id="SetupComponent" Directory="INSTALLFOLDER" Bitness="always64">
+      <File Id="SetupScript" Source="Setup.ps1" KeyPath="yes" />
+
+      <!-- Lets the app be started as just "ScreenMacroService.exe" (lib.rs uses the bare name) -->
+      <Environment Id="ServicePath" Name="PATH" Value="[SERVICEDIR]" Action="set" Part="last" System="yes" />
+    </Component>
+
+    <!-- Working directory is TempFolder so no process holds the install folder open. -->
+    <CustomAction Id="StopBeforeReinstall" Directory="TempFolder" ExeCommand="$(PsCmd) Stop"
+                  Execute="deferred" Impersonate="no" Return="ignore" />
+    <CustomAction Id="RegisterTask" Directory="TempFolder" ExeCommand="$(PsCmd) Register"
+                  Execute="deferred" Impersonate="no" Return="check" />
+    <CustomAction Id="RegisterTaskRollback" Directory="TempFolder" ExeCommand="$(PsCmd) Unregister"
+                  Execute="rollback" Impersonate="no" Return="ignore" />
+    <!-- Uninstall steps never fail the uninstall (Return="ignore"), so a broken install can always be removed. -->
+    <CustomAction Id="StopBeforeRemove" Directory="TempFolder" ExeCommand="$(PsCmd) Stop"
+                  Execute="deferred" Impersonate="no" Return="ignore" />
+    <CustomAction Id="UnregisterTask" Directory="TempFolder" ExeCommand="$(PsCmd) Unregister"
+                  Execute="deferred" Impersonate="no" Return="ignore" />
+    <CustomAction Id="PurgeUserData" Directory="TempFolder" ExeCommand="$(PsCmd) Purge"
+                  Execute="deferred" Impersonate="no" Return="ignore" />
+
+    <InstallExecuteSequence>
+      <!-- install / repair -->
+      <Custom Action="StopBeforeReinstall" Before="InstallFiles" Condition="Installed AND NOT REMOVE" />
+      <Custom Action="RegisterTaskRollback" Before="RegisterTask" Condition="NOT REMOVE" />
+      <Custom Action="RegisterTask" After="InstallFiles" Condition="NOT REMOVE" />
+
+      <!-- uninstall, and the removal of the old version during an upgrade -->
+      <Custom Action="StopBeforeRemove" Before="UnregisterTask" Condition='REMOVE="ALL"' />
+      <Custom Action="UnregisterTask" Before="PurgeUserData" Condition='REMOVE="ALL"' />
+      <!-- app data is only purged on a real uninstall, never during an upgrade -->
+      <Custom Action="PurgeUserData" Before="RemoveFiles" Condition='REMOVE="ALL" AND NOT UPGRADINGPRODUCTCODE' />
+    </InstallExecuteSequence>
+
+  </Package>
+</Wix>
