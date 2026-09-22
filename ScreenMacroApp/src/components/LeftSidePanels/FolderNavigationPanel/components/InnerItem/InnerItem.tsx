@@ -1,0 +1,171 @@
+import { useState } from "react";
+import { Button, FolderButton } from "../../../../../interfaces/Buttons";
+import styles from "./InnerItem.module.css";
+import {
+  FOLDER_PADDING_DEC,
+  ICONS,
+  INIT_TAB,
+  PADDING,
+} from "./InnerItem.config";
+import {
+  MdChevronRight,
+  MdDescription,
+  MdFolder,
+  MdFolderOpen,
+} from "react-icons/md";
+import FolderNavigationItem from "../FolderNavigationItem/FolderNavigationItem";
+import { useRecoilState } from "recoil";
+import { CreateType, pathState } from "../../../../../store/store";
+import ContextMenu from "../../../../ContextMenu/ContextMenu";
+import useButtonControl from "../../../../../hooks/buttonControl";
+
+interface InnerItemProps {
+  keyString: string;
+  path: string[];
+}
+
+const isSelected = (path: string[], keyString: string, currentPath: string[]) =>
+  [...path, keyString].join("/") === currentPath.join("/");
+
+export const InnerItem = ({
+  keyString,
+  button,
+  path,
+}: InnerItemProps & { button: Button }) => {
+  const [currentPath, setCurrentPath] = useRecoilState(pathState);
+  const { removeButton } = useButtonControl();
+
+  const padding = (INIT_TAB + path.length) * PADDING;
+
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData(
+      "application/json",
+      JSON.stringify({ button, path, keyString })
+    );
+
+    console.log("drag start", button, path);
+  };
+
+  return (
+    <>
+      <div
+        className={`${styles.item} ${
+          isSelected(path, keyString, currentPath) ? styles.selected : ""
+        }`}
+        onClick={() => setCurrentPath([...path, keyString])}
+        draggable
+        onDragStart={handleDragStart}
+      >
+        <ContextMenu
+          style={{ paddingLeft: padding }}
+          options={[
+            {
+              label: "Delete",
+              onClick: () => removeButton(keyString, path),
+            },
+          ]}
+        >
+          {(ICONS[button.type] ?? MdDescription)({})}
+          {keyString}
+        </ContextMenu>
+      </div>
+    </>
+  );
+};
+
+export const InnerFolderItem = ({
+  keyString,
+  button,
+  path,
+}: InnerItemProps & { button: FolderButton }) => {
+  const [currentPath, setCurrentPath] = useRecoilState(pathState);
+  const [open, setOpen] = useState(false);
+  const { removeButton, addButton, createButtonPopup } = useButtonControl();
+
+  const padding = (INIT_TAB + path.length) * PADDING - FOLDER_PADDING_DEC;
+
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData(
+      "application/json",
+      JSON.stringify({ button, path, keyString })
+    );
+    e.dataTransfer.effectAllowed = "all";
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const data = e.dataTransfer.getData("application/json");
+    const draggedItem = JSON.parse(data);
+
+    if (
+      `${path.join("/")}${keyString}`.startsWith(
+        `${draggedItem.path.join("/")}${draggedItem.keyString}`
+      )
+    ) {
+      return;
+    }
+
+    removeButton(draggedItem.keyString, draggedItem.path);
+    addButton(draggedItem.button, draggedItem.keyString, [...path, keyString]);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  return (
+    <>
+      <div
+        className={`${styles.item} ${
+          isSelected(path, keyString, currentPath) ? styles.selected : ""
+        }`}
+        style={{ paddingLeft: padding }}
+        onDoubleClick={() => setOpen(!open)}
+        onClick={() => setCurrentPath([...path, keyString])}
+        draggable
+        onDragStart={handleDragStart}
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+      >
+        <ContextMenu
+          style={{ paddingLeft: padding }}
+          options={[
+            {
+              label: "Delete",
+              onClick: () => removeButton(keyString, path),
+            },
+            {
+              label: "Add Folder",
+              onClick: () =>
+                createButtonPopup(CreateType.FOLDER, [...path, keyString]),
+            },
+            {
+              label: "Add Button",
+              onClick: () =>
+                createButtonPopup(CreateType.BUTTON, [...path, keyString]),
+            },
+          ]}
+        >
+          <div>
+            <MdChevronRight
+              onClick={(event) => {
+                event.stopPropagation();
+                setOpen(!open);
+              }}
+              style={{ transform: open ? "rotate(90deg)" : "" }}
+            />
+
+            {open ? <MdFolderOpen /> : <MdFolder />}
+            {keyString}
+          </div>
+        </ContextMenu>
+      </div>
+      {open && (
+        <FolderNavigationItem
+          folders={button.folder}
+          path={[...path, keyString]}
+        />
+      )}
+    </>
+  );
+};

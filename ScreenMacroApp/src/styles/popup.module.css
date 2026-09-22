@@ -1,0 +1,108 @@
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 300px;
+  background-color: var(--secondary-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 5px;
+
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  margin-right: -50%;
+
+  color: white;
+
+  padding: 10px;
+
+  border: none;
+  outline: none;
+
+  section {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    width: 100%;
+
+    h1 {
+      padding-left: 20px;
+    }
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.fieldset {
+  border: 2px var(--marked-color) solid;
+  font-size: 0.75rem;
+  border-radius: 5px;
+  height: 40px;
+  color: white;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.fieldset input[type="text"] {
+  /* reset the field */
+  outline: none;
+  border: none;
+  background: transparent;
+
+  padding: 5px 10px 10px 6px;
+  font-size: 0.75rem;
+  color: white;
+  font-size: 16px;
+  width: 100%;
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+  button {
+    background-color: #34383f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    min-width: 50px;
+  }
+  button:hover {
+    background-color: #444950;
+    transition: 0.3s;
+  }
+}
+
+.fieldset select {
+  outline: none;
+  border: none;
+  background: transparent;
+  padding: 5px 10px 10px 6px;
+  font-size: 0.75rem;
+  color: white;
+  font-size: 16px;
+  width: 100%;
+
+  option {
+    background-color: var(--secondary-color);
+    color: white;
+    width: 100%;
+  }
+}

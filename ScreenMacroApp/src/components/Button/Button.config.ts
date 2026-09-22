@@ -1,0 +1,2 @@
+export const TEXT_HIGHT_PERCENTAGE = 0.3;
+export const BORDER_RADIUS_PERCENTAGE = 0.2;

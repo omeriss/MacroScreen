@@ -1,0 +1,48 @@
+.mainButton {
+  margin: 0 5px;
+  padding: 5px;
+  border-radius: 5px;
+  min-width: 30px;
+  text-align: center;
+  background-color: transparent;
+  border: none;
+  color: var(--nav-text-color);
+  font-size: 16px;
+}
+
+.mainButton:hover {
+  cursor: pointer;
+  background-color: var(--highlight-color);
+}
+
+.buttonContainer {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  z-index: 100;
+  left: 0;
+  top: 100%;
+  background: var(--primery-color-dark);
+  padding: 5px;
+  min-width: 200px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 2px;
+  box-shadow: 3px 3px 3px 3px rgba(22, 22, 22, 0.673);
+
+  button {
+    background: transparent;
+    text-align: left;
+    border: none;
+    border-radius: 4px;
+    padding-left: 20px;
+    color: var(--nav-text-color);
+    min-height: 30px;
+  }
+
+  button:hover {
+    background: var(--highlight-color);
+  }
+}
